@@ -45,10 +45,10 @@ public interface LoanService {
      * Actualiza un préstamo existente.
      *
      * @param id identificador del préstamo
-     * @param loanDTO datos nuevos del usuario
+     * @param loanDTO datos nuevos del préstamo
      * @return préstamo actualizado en formato DTO
      */
-    LoanDTO updateUser(Integer id, LoanDTO loanDTO);
+    LoanDTO updateLoan(Integer id, LoanDTO loanDTO);
 
     /**
      * Elimina un préstamo por su identificador.
