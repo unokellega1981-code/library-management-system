@@ -67,5 +67,4 @@ public class Book {
      */
     @Column(name = "availableCopies")
     private Integer availableCopies;
-
 }

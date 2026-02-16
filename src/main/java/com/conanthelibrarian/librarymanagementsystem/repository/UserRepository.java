@@ -17,9 +17,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *     <li>Listar usuarios</li>
  *     <li>Eliminar usuarios</li>
  * </ul>
- *
- * <p>Más adelante se pueden añadir métodos adicionales para búsquedas específicas,
- * por ejemplo buscar usuarios por nombre o email.</p>
  */
 public interface UserRepository extends JpaRepository<User, Integer> {
 }

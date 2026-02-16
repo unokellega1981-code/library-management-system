@@ -15,13 +15,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *     <li>Listar todos ({@code findAll})</li>
  *     <li>Eliminar ({@code deleteById})</li>
  * </ul>
- *
- * <p>Más adelante se pueden añadir aquí consultas personalizadas (queries) para cumplir
- * con los requisitos del proyecto, por ejemplo:</p>
- * <ul>
- *     <li>Recuperar libros por género</li>
- *     <li>Recuperar libros por autor</li>
- * </ul>
  */
 public interface BookRepository extends JpaRepository<Book, Integer> {
 }

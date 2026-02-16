@@ -47,9 +47,6 @@ public class UserDTO {
 
     /**
      * Contraseña del usuario.
-     *
-     * <p>En este proyecto se guarda como texto simple (según el SQL).
-     * En un sistema real debería guardarse siempre como hash.</p>
      */
     @NotBlank(message = "Tienes que poner una contraseña")
     private String password;
@@ -59,5 +56,4 @@ public class UserDTO {
      */
     @NotNull(message = "Tienes que poner que tipo de usuario es")
     private Role role;
-
 }

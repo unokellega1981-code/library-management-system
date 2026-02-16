@@ -64,5 +64,4 @@ public class BookDTO {
     @NotNull(message = "Tienes que poner cuantas copias hay del libro")
     @Min(value = 0, message = "La cantidad de copias no puede ser negativa")
     private Integer availableCopies;
-
 }

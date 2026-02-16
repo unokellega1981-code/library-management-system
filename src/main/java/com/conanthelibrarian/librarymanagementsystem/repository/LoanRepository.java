@@ -16,13 +16,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *     <li>{@code findAll} para listar préstamos</li>
  *     <li>{@code deleteById} para eliminar préstamos</li>
  * </ul>
- *
- * <p>En este proyecto será especialmente importante añadir consultas personalizadas
- * relacionadas con préstamos, por ejemplo:</p>
- * <ul>
- *     <li>Recuperar todos los libros actualmente prestados</li>
- *     <li>Recuperar usuarios con más de X libros prestados</li>
- * </ul>
  */
 public interface LoanRepository extends JpaRepository<Loan, Integer> {
 }

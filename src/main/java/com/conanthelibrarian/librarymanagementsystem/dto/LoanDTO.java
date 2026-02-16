@@ -59,5 +59,4 @@ public class LoanDTO {
      */
     @NotNull(message = "La fecha de devolución no puede estar vacía")
     private LocalDate dueDate;
-
 }

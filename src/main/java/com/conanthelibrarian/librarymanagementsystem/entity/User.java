@@ -50,9 +50,6 @@ public class User {
 
     /**
      * Contraseña del usuario.
-     *
-     * <p>IMPORTANTE: en un sistema real, esto debería almacenarse cifrado (hash),
-     * pero para este proyecto se guarda como texto simple según el SQL proporcionado.</p>
      */
     @Column(name = "password")
     private String password;
@@ -65,5 +62,4 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
-
 }

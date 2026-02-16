@@ -61,9 +61,6 @@ public class LoanMapper {
      * con únicamente el ID asignado. Esto permite que JPA relacione correctamente
      * las claves foráneas.</p>
      *
-     * <p>La validación de que el usuario y el libro existen debe hacerse en la capa Service,
-     * no en el mapper.</p>
-     *
      * @param loanDTO DTO LoanDTO
      * @return entidad equivalente o null si el parámetro es null
      */

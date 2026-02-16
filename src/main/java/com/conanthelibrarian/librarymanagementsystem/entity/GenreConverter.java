@@ -44,5 +44,4 @@ public class GenreConverter implements AttributeConverter<Genre, String> {
     public Genre convertToEntityAttribute(String dataBaseValue) {
         return dataBaseValue == null ? null : Genre.fromDataBaseValue(dataBaseValue);
     }
-
 }
