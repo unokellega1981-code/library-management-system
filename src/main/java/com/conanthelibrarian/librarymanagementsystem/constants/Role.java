@@ -9,7 +9,7 @@ package com.conanthelibrarian.librarymanagementsystem.constants;
  *     <li>{@link #STAFF}: personal de la biblioteca (puede realizar tareas de gestión)</li>
  * </ul>
  *
- * <p>Normalmente este enum se almacena en base de datos como texto usando
+ * <p>Normalmente, este enum se almacena en base de datos como texto usando
  * {@code @Enumerated(EnumType.STRING)} para evitar problemas si el orden del enum cambia.</p>
  */
 public enum Role {
