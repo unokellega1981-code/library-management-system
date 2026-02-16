@@ -1,7 +1,6 @@
 package com.conanthelibrarian.librarymanagementsystem.service;
 
 import com.conanthelibrarian.librarymanagementsystem.dto.LoanDTO;
-import com.conanthelibrarian.librarymanagementsystem.dto.UserDTO;
 
 import java.util.List;
 
@@ -37,9 +36,6 @@ public interface LoanService {
      *     <li>Se debe reducir availableCopies en 1</li>
      * </ul>
      *
-     * <p>Esto NO es “CRUD puro”, pero sí es lógica real del ejercicio.
-     * Te avisaré cuando lo implementemos.</p>
-     *
      * @param loanDTO datos del préstamo a crear
      * @return préstamo creado
      */
@@ -52,17 +48,12 @@ public interface LoanService {
      * @param loanDTO datos nuevos del usuario
      * @return préstamo actualizado en formato DTO
      */
-    LoanDTO updateuser(Integer id, LoanDTO loanDTO);
+    LoanDTO updateUser(Integer id, LoanDTO loanDTO);
 
     /**
      * Elimina un préstamo por su identificador.
      *
      * <p>Normalmente equivale a "devolver" un libro.</p>
-     *
-     * <p>IMPORTANTE: aquí normalmente se aplica una regla extra:</p>
-     * <ul>
-     *     <li>Incrementar availableCopies en 1</li>
-     * </ul>
      *
      * @param id identificador del préstamo
      */

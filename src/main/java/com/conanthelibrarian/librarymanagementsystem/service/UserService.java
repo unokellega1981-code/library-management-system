@@ -37,11 +37,11 @@ public interface UserService {
     /**
      * Actualiza un usuario existente.
      *
-     * @param id identificador del usuario
+     * @param id      identificador del usuario
      * @param userDTO datos nuevos del usuario
      * @return usuario actualizado en formato DTO
      */
-    UserDTO updateuser(Integer id, UserDTO userDTO);
+    UserDTO updateUser(Integer id, UserDTO userDTO);
 
     /**
      * Elimina un usuario por su identificador.

@@ -9,9 +9,6 @@ import java.util.List;
  *
  * <p>Esta interfaz representa la capa intermedia entre los controllers (API)
  * y los repositories (persistencia).</p>
- *
- * <p>En este proyecto se trabaja con DTOs para evitar exponer directamente
- * las entidades JPA.</p>
  */
 public interface BookService {
 
@@ -41,7 +38,7 @@ public interface BookService {
     /**
      * Actualiza un libro existente.
      *
-     * @param id identificador del libro a actualizar
+     * @param id      identificador del libro a actualizar
      * @param bookDTO datos nuevos del libro
      * @return libro actualizado en formato DTO
      */
