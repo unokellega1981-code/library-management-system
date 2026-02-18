@@ -65,6 +65,6 @@ public class Book {
     /**
      * Número de copias disponibles actualmente para préstamo.
      */
-    @Column(name = "availableCopies")
+    @Column(name = "availablecopies")
     private Integer availableCopies;
 }
