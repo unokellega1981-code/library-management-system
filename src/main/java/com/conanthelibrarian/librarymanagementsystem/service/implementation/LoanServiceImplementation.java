@@ -1,12 +1,16 @@
 package com.conanthelibrarian.librarymanagementsystem.service.implementation;
 
+import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.dto.LoanDTO;
+import com.conanthelibrarian.librarymanagementsystem.dto.UserDTO;
 import com.conanthelibrarian.librarymanagementsystem.entity.Book;
 import com.conanthelibrarian.librarymanagementsystem.entity.Loan;
 import com.conanthelibrarian.librarymanagementsystem.entity.User;
 import com.conanthelibrarian.librarymanagementsystem.exception.ResourceNotFoundException;
 import com.conanthelibrarian.librarymanagementsystem.exception.BadRequestException;
+import com.conanthelibrarian.librarymanagementsystem.mapper.BookMapper;
 import com.conanthelibrarian.librarymanagementsystem.mapper.LoanMapper;
+import com.conanthelibrarian.librarymanagementsystem.mapper.UserMapper;
 import com.conanthelibrarian.librarymanagementsystem.repository.BookRepository;
 import com.conanthelibrarian.librarymanagementsystem.repository.LoanRepository;
 import com.conanthelibrarian.librarymanagementsystem.repository.UserRepository;
@@ -234,5 +238,29 @@ public class LoanServiceImplementation implements LoanService {
 
         // 4) Eliminar préstamo
         loanRepository.delete(loan);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<BookDTO> getBooksCurrentlyOnLoan() {
+
+        return loanRepository.findBooksCurrentlyOnLoan()
+                .stream()
+                .map(BookMapper::toDTO)
+                .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserDTO> getUsersWithMoreThanXLoans(Long minLoans) {
+
+        return loanRepository.findUsersWithMoreThanXLoans(minLoans)
+                .stream()
+                .map(UserMapper::toDTO)
+                .toList();
     }
 }

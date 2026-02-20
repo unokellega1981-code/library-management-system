@@ -47,7 +47,7 @@ public class Loan {
      * <p>Se mapea con la columna userId, que es una FK a Users(id).</p>
      */
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "userid")
     private User user;
 
     /**
@@ -56,7 +56,7 @@ public class Loan {
      * <p>Se mapea con la columna bookId, que es una FK a Books(id).</p>
      */
     @ManyToOne
-    @JoinColumn(name = "bookId")
+    @JoinColumn(name = "bookid")
     private Book book;
 
     /**
@@ -64,7 +64,7 @@ public class Loan {
      *
      * <p>Se usa {@link LocalDate} porque en SQL el tipo es DATE.</p>
      */
-    @Column(name = "loanDate")
+    @Column(name = "loandate")
     private LocalDate loanDate;
 
     /**
@@ -72,6 +72,6 @@ public class Loan {
      *
      * <p>Se usa {@link LocalDate} porque en SQL el tipo es DATE.</p>
      */
-    @Column(name = "dueDate")
+    @Column(name = "duedate")
     private LocalDate dueDate;
 }

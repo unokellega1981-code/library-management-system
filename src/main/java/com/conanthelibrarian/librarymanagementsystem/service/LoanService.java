@@ -1,6 +1,8 @@
 package com.conanthelibrarian.librarymanagementsystem.service;
 
+import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.dto.LoanDTO;
+import com.conanthelibrarian.librarymanagementsystem.dto.UserDTO;
 
 import java.util.List;
 
@@ -58,4 +60,19 @@ public interface LoanService {
      * @param id identificador del préstamo
      */
     void deleteLoan(Integer id);
+
+    /**
+     * Obtiene todos los libros que están actualmente en préstamo.
+     *
+     * @return lista de libros en formato DTO
+     */
+    List<BookDTO> getBooksCurrentlyOnLoan();
+
+    /**
+     * Obtiene todos los usuarios que tienen más de X préstamos.
+     *
+     * @param minLoans número mínimo de préstamos
+     * @return lista de usuarios en formato DTO
+     */
+    List<UserDTO> getUsersWithMoreThanXLoans(Long minLoans);
 }
