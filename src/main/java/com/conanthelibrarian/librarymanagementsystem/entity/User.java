@@ -24,7 +24,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "Users")
+@Table(name = "users")
 public class User {
 
     /**
@@ -45,7 +45,7 @@ public class User {
     /**
      * Email del usuario.
      */
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     /**

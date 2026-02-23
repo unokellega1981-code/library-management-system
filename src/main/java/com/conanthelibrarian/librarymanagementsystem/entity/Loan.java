@@ -29,7 +29,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Entity
-@Table(name = "Loans")
+@Table(name = "loans")
 public class Loan {
 
     /**
@@ -47,7 +47,7 @@ public class Loan {
      * <p>Se mapea con la columna userId, que es una FK a Users(id).</p>
      */
     @ManyToOne
-    @JoinColumn(name = "userid")
+    @JoinColumn(name = "user_id")
     private User user;
 
     /**
@@ -56,7 +56,7 @@ public class Loan {
      * <p>Se mapea con la columna bookId, que es una FK a Books(id).</p>
      */
     @ManyToOne
-    @JoinColumn(name = "bookid")
+    @JoinColumn(name = "book_id")
     private Book book;
 
     /**
@@ -64,7 +64,7 @@ public class Loan {
      *
      * <p>Se usa {@link LocalDate} porque en SQL el tipo es DATE.</p>
      */
-    @Column(name = "loandate")
+    @Column(name = "loan_date")
     private LocalDate loanDate;
 
     /**
@@ -72,6 +72,6 @@ public class Loan {
      *
      * <p>Se usa {@link LocalDate} porque en SQL el tipo es DATE.</p>
      */
-    @Column(name = "duedate")
+    @Column(name = "due_date")
     private LocalDate dueDate;
 }

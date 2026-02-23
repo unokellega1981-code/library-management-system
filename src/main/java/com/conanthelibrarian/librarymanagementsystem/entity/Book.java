@@ -23,7 +23,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "Books")
+@Table(name = "books")
 public class Book {
 
     /**
@@ -50,7 +50,7 @@ public class Book {
     /**
      * ISBN del libro.
      */
-    @Column(name = "isbn")
+    @Column(name = "isbn", unique = true)
     private String isbn;
 
     /**
@@ -65,6 +65,6 @@ public class Book {
     /**
      * Número de copias disponibles actualmente para préstamo.
      */
-    @Column(name = "availablecopies")
+    @Column(name = "available_copies")
     private Integer availableCopies;
 }
