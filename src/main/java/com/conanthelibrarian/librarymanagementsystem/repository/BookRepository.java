@@ -1,10 +1,7 @@
 package com.conanthelibrarian.librarymanagementsystem.repository;
 
-import com.conanthelibrarian.librarymanagementsystem.constants.Genre;
 import com.conanthelibrarian.librarymanagementsystem.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
 
 /**
  * Repositorio de acceso a datos para la entidad {@link Book}.
@@ -20,12 +17,4 @@ import java.util.List;
  * </ul>
  */
 public interface BookRepository extends JpaRepository<Book, Integer> {
-
-    /**
-     * Recupera los libros de un género específico.
-     *
-     * @param genre género del libro
-     * @return lista de libros de ese género
-     */
-    List<Book> findByGenre(Genre genre);
 }
