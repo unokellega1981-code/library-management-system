@@ -57,6 +57,5 @@ public class LoanDTO {
     /**
      * Fecha límite en la que el libro debe devolverse.
      */
-    @NotNull(message = "La fecha de devolución no puede estar vacía")
     private LocalDate dueDate;
 }
