@@ -1,6 +1,5 @@
 package com.conanthelibrarian.librarymanagementsystem.controller;
 
-import com.conanthelibrarian.librarymanagementsystem.constants.Genre;
 import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.service.BookService;
 import jakarta.validation.Valid;
@@ -89,21 +88,4 @@ public class BookController {
         bookService.deleteBook(id);
         return ResponseEntity.noContent().build();
     }
-
-    /**
-     * Obtiene todos los libros de un género específico.
-     *
-     * <p>Ejemplo de uso:</p>
-     * <pre>
-     * GET /api/books/genre/FANTASY
-     * </pre>
-     *
-     * @param genre género del libro (enum)
-     * @return lista de libros filtrados por género
-     */
-    @GetMapping("/genre/{genre}")
-    public ResponseEntity<List<BookDTO>> getBooksByGenre(@PathVariable Genre genre) {
-        return ResponseEntity.ok(bookService.getBooksByGenre(genre));
-    }
-
 }

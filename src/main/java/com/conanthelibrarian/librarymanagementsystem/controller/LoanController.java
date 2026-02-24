@@ -1,8 +1,6 @@
 package com.conanthelibrarian.librarymanagementsystem.controller;
 
-import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.dto.LoanDTO;
-import com.conanthelibrarian.librarymanagementsystem.dto.UserDTO;
 import com.conanthelibrarian.librarymanagementsystem.service.LoanService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -100,9 +98,11 @@ public class LoanController {
     /**
      * Elimina un préstamo por su ID.
      *
-     * <p>En la lógica del sistema esto equivale a devolver el libro.</p>
+     * <p>Solo se permite eliminar el registro si el préstamo ya ha sido devuelto
+     * (es decir, si dueDate no es null).</p>
      *
-     * <p>IMPORTANTE: la capa Service se encarga de incrementar availableCopies en 1.</p>
+     * <p>Si el libro no ha sido devuelto, la capa Service lanzará una excepción
+     * indicando que no se puede borrar el registro.</p>
      *
      * @param id identificador del préstamo
      * @return respuesta 204 No Content si se elimina correctamente
@@ -111,38 +111,5 @@ public class LoanController {
     public ResponseEntity<Void> deleteLoan(@PathVariable Integer id) {
         loanService.deleteLoan(id);
         return ResponseEntity.noContent().build();
-    }
-
-    /**
-     * Recupera todos los libros actualmente en préstamo.
-     *
-     * <p>Un libro se considera actualmente prestado si existe
-     * al menos un registro en la tabla Loan asociado a él.</p>
-     *
-     * @return lista de libros prestados
-     */
-    @GetMapping("/books-on-loan")
-    public ResponseEntity<List<BookDTO>> getBooksCurrentlyOnLoan() {
-        return ResponseEntity.ok(loanService.getBooksCurrentlyOnLoan());
-    }
-
-    /**
-     * Recupera todos los usuarios que tienen más de X préstamos.
-     *
-     * <p>Ejemplo de uso:</p>
-     * <pre>
-     * GET /api/loans/users-with-more-than?minLoans=2
-     * </pre>
-     *
-     * @param minLoans número mínimo de préstamos
-     * @return lista de usuarios que superan ese número
-     */
-    @GetMapping("/users-with-more-than")
-    public ResponseEntity<List<UserDTO>> getUsersWithMoreThanXLoans(
-            @RequestParam Long minLoans) {
-
-        return ResponseEntity.ok(
-                loanService.getUsersWithMoreThanXLoans(minLoans)
-        );
     }
 }
