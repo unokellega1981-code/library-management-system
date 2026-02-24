@@ -1,5 +1,6 @@
 package com.conanthelibrarian.librarymanagementsystem.service.implementation;
 
+import com.conanthelibrarian.librarymanagementsystem.constants.Genre;
 import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.entity.Book;
 import com.conanthelibrarian.librarymanagementsystem.exception.ResourceNotFoundException;
@@ -106,5 +107,16 @@ public class BookServiceImplementation implements BookService {
                 new ResourceNotFoundException("No se ha encontrado ningún libro con el ID: " + id));
 
         bookRepository.delete(existingBook);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<BookDTO> getBooksByGenre(Genre genre) {
+        return bookRepository.findByGenre(genre)
+                .stream()
+                .map(BookMapper::toDTO)
+                .toList();
     }
 }
