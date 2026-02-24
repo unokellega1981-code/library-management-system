@@ -1,7 +1,10 @@
 package com.conanthelibrarian.librarymanagementsystem.repository;
 
+import com.conanthelibrarian.librarymanagementsystem.constants.Genre;
 import com.conanthelibrarian.librarymanagementsystem.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
 
 /**
  * Repositorio de acceso a datos para la entidad {@link Book}.
@@ -17,4 +20,19 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * </ul>
  */
 public interface BookRepository extends JpaRepository<Book, Integer> {
+
+    /**
+     * Recupera todos los libros que pertenecen a un género específico.
+     *
+     * <p>Este método utiliza la convención de nombres de Spring Data JPA
+     * para generar automáticamente la consulta:</p>
+     * <pre>
+     * SELECT * FROM book WHERE genre = :genre
+     * </pre>
+     *
+     * @param genre género de los libros que se desea buscar (no debe ser null)
+     * @return lista de {@link Book} que pertenecen al género indicado.
+     *         Devuelve una lista vacía si no se encuentran coincidencias.
+     */
+    List<Book> findByGenre(Genre genre);
 }

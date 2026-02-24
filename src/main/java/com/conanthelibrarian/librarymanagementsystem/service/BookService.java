@@ -1,5 +1,6 @@
 package com.conanthelibrarian.librarymanagementsystem.service;
 
+import com.conanthelibrarian.librarymanagementsystem.constants.Genre;
 import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 
 import java.util.List;
@@ -50,4 +51,12 @@ public interface BookService {
      * @param id identificador del libro
      */
     void deleteBook(Integer id);
+
+    /**
+     * Recupera todos los libros de un género específico.
+     *
+     * @param genre género a buscar
+     * @return lista de libros del género indicado
+     */
+    List<BookDTO> getBooksByGenre(Genre genre);
 }
