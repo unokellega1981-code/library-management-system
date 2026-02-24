@@ -1,16 +1,12 @@
 package com.conanthelibrarian.librarymanagementsystem.service.implementation;
 
-import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.dto.LoanDTO;
-import com.conanthelibrarian.librarymanagementsystem.dto.UserDTO;
 import com.conanthelibrarian.librarymanagementsystem.entity.Book;
 import com.conanthelibrarian.librarymanagementsystem.entity.Loan;
 import com.conanthelibrarian.librarymanagementsystem.entity.User;
 import com.conanthelibrarian.librarymanagementsystem.exception.ResourceNotFoundException;
 import com.conanthelibrarian.librarymanagementsystem.exception.BadRequestException;
-import com.conanthelibrarian.librarymanagementsystem.mapper.BookMapper;
 import com.conanthelibrarian.librarymanagementsystem.mapper.LoanMapper;
-import com.conanthelibrarian.librarymanagementsystem.mapper.UserMapper;
 import com.conanthelibrarian.librarymanagementsystem.repository.BookRepository;
 import com.conanthelibrarian.librarymanagementsystem.repository.LoanRepository;
 import com.conanthelibrarian.librarymanagementsystem.repository.UserRepository;
@@ -210,13 +206,24 @@ public class LoanServiceImplementation implements LoanService {
     /**
      * {@inheritDoc}
      *
-     * <p>Este método está anotado con {@link Transactional} para garantizar que:</p>
+     * <p>Elimina un préstamo existente del sistema.</p>
+     *
+     * <p><strong>Regla de negocio importante:</strong></p>
      * <ul>
-     *     <li>La eliminación del préstamo</li>
-     *     <li>La devolución de stock (incremento de copias)</li>
+     *     <li>Solo se puede eliminar un préstamo si el libro ya ha sido devuelto.</li>
+     *     <li>En este sistema se considera que el libro está devuelto cuando
+     *         {@code dueDate} NO es {@code null}.</li>
      * </ul>
      *
-     * <p>se ejecuten como una sola operación atómica.</p>
+     * <p>Si {@code dueDate} es {@code null}, significa que el libro sigue prestado
+     * y no se permitirá la eliminación del registro.</p>
+     *
+     * <p>Este método es transaccional para garantizar que la validación y la eliminación
+     * se ejecuten como una única operación atómica.</p>
+     *
+     * @param id identificador del préstamo
+     * @throws ResourceNotFoundException si el préstamo no existe
+     * @throws BadRequestException si el libro aún no ha sido devuelto
      */
     @Transactional
     @Override
@@ -224,43 +231,19 @@ public class LoanServiceImplementation implements LoanService {
 
         // 1) Comprobar que el préstamo existe
         Loan loan = loanRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("No se ha encontrado ningún préstamo con el ID: " + id));
+                new ResourceNotFoundException(
+                        "No se ha encontrado ningún préstamo con el ID: " + id
+                )
+        );
 
-        // 2) Recuperar el libro asociado al préstamo
-        Book book = loan.getBook();
-
-        // 3) Incrementar copias disponibles (devolución)
-        if (book != null) {
-            Integer currentCopies = book.getAvailableCopies() == null ? 0 : book.getAvailableCopies();
-            book.setAvailableCopies(currentCopies + 1);
-            bookRepository.save(book);
+        // 2) Validar que el libro esté devuelto
+        if (loan.getDueDate() == null) {
+            throw new BadRequestException(
+                    "No se puede borrar el registro porque el libro no está devuelto"
+            );
         }
 
-        // 4) Eliminar préstamo
+        // 3) Eliminar préstamo (solo registro histórico)
         loanRepository.delete(loan);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<BookDTO> getBooksCurrentlyOnLoan() {
-
-        return loanRepository.findBooksCurrentlyOnLoan()
-                .stream()
-                .map(BookMapper::toDTO)
-                .toList();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<UserDTO> getUsersWithMoreThanXLoans(Long minLoans) {
-
-        return loanRepository.findUsersWithMoreThanXLoans(minLoans)
-                .stream()
-                .map(UserMapper::toDTO)
-                .toList();
     }
 }
