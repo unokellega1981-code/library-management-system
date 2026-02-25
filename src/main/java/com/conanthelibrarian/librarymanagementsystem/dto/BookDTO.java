@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * DTO (Data Transfer Object) que representa un libro en la capa de API.
+ * DTO (Data Transfer Object) para representar un libro.
  *
- * <p>Se utiliza para enviar y recibir información relacionada con libros desde los
- * controladores, evitando exponer directamente la entidad {@code Book}.</p>
- *
- * <p>Este DTO incluye validaciones para garantizar que los datos recibidos en peticiones
- * HTTP sean correctos antes de llegar a la lógica de negocio.</p>
+ * <p>
+ * Este objeto se utiliza para transferir datos entre la API y
+ * el cliente sin exponer directamente la entidad Book.
+ * Incluye validaciones de los campos para asegurar datos correctos.
+ * </p>
  */
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,41 +25,36 @@ import lombok.Setter;
 public class BookDTO {
 
     /**
-     * Identificador del libro.
-     *
-     * <p>En operaciones de creación normalmente será {@code null}.
-     * En operaciones de actualización sí puede venir informado.</p>
+     * Identificador único del libro
      */
     private Integer id;
 
     /**
-     * Título del libro.
+     * Título del libro (no puede estar vacío)
      */
     @NotBlank(message = "Tienes que poner un título al libro")
     private String title;
 
     /**
-     * Autor del libro.
+     * Autor del libro (no puede estar vacío)
      */
     @NotBlank(message = "Tienes que poner un autor al libro")
     private String author;
 
     /**
-     * ISBN del libro.
+     * Código ISBN único del libro (no puede estar vacío)
      */
     @NotBlank(message = "Tienes que poner un ISBN al libro")
     private String isbn;
 
     /**
-     * Género del libro.
+     * Género del libro (no puede ser nulo)
      */
     @NotNull(message = "Tienes que poner el género del libro")
     private Genre genre;
 
     /**
-     * Número de copias disponibles del libro.
-     *
-     * <p>No puede ser negativo.</p>
+     * Número de copias disponibles (no nulo y >= 0)
      */
     @NotNull(message = "Tienes que poner cuantas copias hay del libro")
     @Min(value = 0, message = "La cantidad de copias no puede ser negativa")

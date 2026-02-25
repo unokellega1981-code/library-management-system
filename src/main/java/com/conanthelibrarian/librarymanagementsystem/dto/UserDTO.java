@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * DTO (Data Transfer Object) que representa un usuario en la capa de API.
+ * DTO para representar un usuario.
  *
- * <p>Se utiliza para enviar y recibir información relacionada con usuarios desde los
- * controladores, evitando exponer directamente la entidad {@code User}.</p>
- *
- * <p>Incluye validaciones básicas para asegurar que los datos de registro y actualización
- * son correctos.</p>
+ * <p>
+ * Este objeto se usa para transferir datos entre la API y el cliente,
+ * evitando exponer directamente la entidad User.
+ * Incluye validaciones de los campos.
+ * </p>
  */
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,34 +25,31 @@ import lombok.Setter;
 public class UserDTO {
 
     /**
-     * Identificador del usuario.
-     *
-     * <p>En operaciones de creación normalmente será {@code null}.
-     * En operaciones de actualización sí puede venir informado.</p>
+     * Identificador único del usuario
      */
     private Integer id;
 
     /**
-     * Nombre del usuario.
+     * Nombre completo (no puede estar vacío)
      */
     @NotBlank(message = "Tienes que poner un nombre al usuario")
     private String name;
 
     /**
-     * Email del usuario.
+     * Email del usuario (no puede estar vacío y debe ser válido)
      */
     @NotBlank(message = "Tienes que poner un email al usuario")
     @Email(message = "El email debe ser correcto")
     private String email;
 
     /**
-     * Contraseña del usuario.
+     * Contraseña del usuario (no puede estar vacía)
      */
     @NotBlank(message = "Tienes que poner una contraseña")
     private String password;
 
     /**
-     * Rol del usuario (MEMBER o STAFF).
+     * Rol del usuario (no nulo)
      */
     @NotNull(message = "Tienes que poner que tipo de usuario es")
     private Role role;

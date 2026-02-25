@@ -6,24 +6,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
- * DTO (Data Transfer Object) que representa un préstamo en la capa de API.
+ * DTO para representar un préstamo de libro.
  *
- * <p>Este DTO se utiliza para enviar y recibir información de préstamos desde los
- * controladores.</p>
- *
- * <p>Importante: a diferencia de la entidad {@code Loan}, que contiene referencias
- * a objetos {@code User} y {@code Book}, este DTO utiliza los IDs
- * ({@code userId} y {@code bookId}).</p>
- *
- * <p>Esto se hace para:</p>
- * <ul>
- *     <li>Simplificar el JSON enviado/recibido</li>
- *     <li>Evitar objetos anidados innecesarios</li>
- *     <li>Evitar problemas de recursión en la serialización</li>
- * </ul>
+ * <p>
+ * Este objeto se utiliza para transferir datos entre la API y
+ * el cliente, sin exponer directamente la entidad Loan.
+ * Incluye validaciones para los campos obligatorios.
+ * </p>
  */
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,30 +25,41 @@ import java.time.LocalDate;
 public class LoanDTO {
 
     /**
-     * Identificador del préstamo.
+     * Identificador único del préstamo
      */
     private Integer id;
 
     /**
-     * ID del usuario que recibe el préstamo.
+     * ID del usuario que realiza el préstamo (no nulo)
      */
     @NotNull(message = "Tienes que poner el ID del usuario")
     private Integer userId;
 
     /**
-     * ID del libro prestado.
+     * ID del libro prestado (no nulo)
      */
     @NotNull(message = "Tienes que poner el ID del libro")
     private Integer bookId;
 
     /**
-     * Fecha en la que se realizó el préstamo.
+     * Fecha de inicio del préstamo (no nula)
      */
     @NotNull(message = "La fecha de préstamo no puede estar vacía")
     private LocalDate loanDate;
 
     /**
-     * Fecha límite en la que el libro debe devolverse.
+     * Fecha límite de devolución (no nula)
      */
+    @NotNull(message = "La fecha de vencimiento no puede estar vacía")
     private LocalDate dueDate;
+
+    /**
+     * Fecha en la que se devolvió el libro (puede ser null)
+     */
+    private LocalDate returnedDate;
+
+    /**
+     * Precio asociado al préstamo o penalización
+     */
+    private BigDecimal price;
 }
