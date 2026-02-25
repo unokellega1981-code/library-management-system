@@ -6,23 +6,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
- * Entidad que representa la tabla "Loans" de la base de datos.
+ * Entidad que representa un préstamo de un libro.
  *
- * <p>Un préstamo relaciona un {@link User} con un {@link Book} y contiene
- * la fecha en la que se prestó el libro y la fecha en la que debería devolverse.</p>
- *
- * <p>Importante: en el SQL original la tabla contiene las columnas:</p>
- * <ul>
- *     <li>userId (FK a Users.id)</li>
- *     <li>bookId (FK a Books.id)</li>
- * </ul>
- *
- * <p>En Java, en vez de guardar simplemente los IDs, se usan relaciones
- * {@code @ManyToOne} para trabajar con objetos, lo cual simplifica el código
- * y es la forma estándar con JPA.</p>
+ * <p>
+ * Relaciona un usuario con un libro y almacena
+ * la información temporal del préstamo.
+ * </p>
  */
 @AllArgsConstructor
 @NoArgsConstructor
@@ -34,44 +27,47 @@ public class Loan {
 
     /**
      * Identificador único del préstamo.
-     * Se genera automáticamente en base de datos con identity.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
-
     /**
-     * Usuario que tiene el préstamo.
-     *
-     * <p>Se mapea con la columna userId, que es una FK a Users(id).</p>
+     * Usuario que realiza el préstamo.
      */
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     /**
-     * Libro que se ha prestado.
-     *
-     * <p>Se mapea con la columna bookId, que es una FK a Books(id).</p>
+     * Libro prestado.
      */
-    @ManyToOne
-    @JoinColumn(name = "book_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
     /**
-     * Fecha en la que se realizó el préstamo.
-     *
-     * <p>Se usa {@link LocalDate} porque en SQL el tipo es DATE.</p>
+     * Fecha en la que se realiza el préstamo.
      */
     @Column(name = "loan_date")
     private LocalDate loanDate;
 
     /**
-     * Fecha límite para devolver el libro.
-     *
-     * <p>Se usa {@link LocalDate} porque en SQL el tipo es DATE.</p>
+     * Fecha límite de devolución.
      */
     @Column(name = "due_date")
     private LocalDate dueDate;
+
+    /**
+     * Fecha real de devolución (puede ser null si no se ha devuelto).
+     */
+    @Column(name = "returned_date")
+    private LocalDate returnedDate;
+
+    /**
+     * Precio del préstamo o penalización.
+     */
+    @Column(name = "price")
+    private BigDecimal price;
 }

@@ -8,15 +8,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Entidad que representa la tabla "Books" de la base de datos.
+ * Entidad que representa un libro dentro del sistema.
  *
- * <p>Contiene la información principal de un libro dentro del sistema,
- * incluyendo su stock disponible para préstamos.</p>
- *
- * <p>Importante: el campo {@code genre} se mapea usando un enum {@link Genre}.
- * Como la base de datos guarda valores con espacios (por ejemplo "Science Fiction"),
- * este campo requiere un {@code AttributeConverter} (GenreConverter) para convertir
- * entre el enum y el texto de la base de datos.</p>
+ * <p>
+ * Está mapeada a la tabla "books" de la base de datos.
+ * Contiene información básica como título, autor, ISBN,
+ * género y número de copias disponibles.
+ * </p>
  */
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,7 +26,6 @@ public class Book {
 
     /**
      * Identificador único del libro.
-     * Se genera automáticamente en base de datos con identity.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,22 +45,20 @@ public class Book {
     private String author;
 
     /**
-     * ISBN del libro.
+     * Código ISBN único del libro.
      */
     @Column(name = "isbn", unique = true)
     private String isbn;
 
     /**
-     * Género del libro.
-     *
-     * <p>Se guarda como texto en la base de datos (por ejemplo "Fantasy" o "Science Fiction"),
-     * pero en Java se maneja como enum para tener consistencia y evitar errores.</p>
+     * Género literario del libro.
+     * Se convierte automáticamente mediante GenreConverter.
      */
     @Column(name = "genre")
     private Genre genre;
 
     /**
-     * Número de copias disponibles actualmente para préstamo.
+     * Número de copias disponibles para préstamo.
      */
     @Column(name = "available_copies")
     private Integer availableCopies;
