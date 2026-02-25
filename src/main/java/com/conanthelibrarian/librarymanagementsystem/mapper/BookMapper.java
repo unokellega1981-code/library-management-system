@@ -4,29 +4,26 @@ import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.entity.Book;
 
 /**
- * Clase encargada de convertir entre {@link Book} (entidad) y {@link BookDTO} (DTO).
+ * Mapper para la entidad Book.
  *
- * <p>Los mappers permiten separar la capa de persistencia (entidades JPA)
- * de la capa de API (DTOs), evitando exponer directamente las entidades en los controllers.</p>
- *
- * <p>Esta clase contiene métodos estáticos para evitar instanciación y porque no mantiene estado.</p>
+ * <p>
+ * Permite convertir entre la entidad Book y su DTO (BookDTO) y viceversa.
+ * Esto facilita separar la capa de persistencia de la capa de presentación.
+ * </p>
  */
 public class BookMapper {
 
+    /**
+     * Constructor privado para evitar instanciación
+     */
     private BookMapper() {
-        // Constructor privado para evitar instanciación.
     }
 
     /**
-     * Convierte una entidad {@link Book} en un {@link BookDTO}.
-     *
-     * @param book entidad Book
-     * @return DTO equivalente o null si el parámetro es null
+     * Convierte Book → BookDTO
      */
     public static BookDTO toDTO(Book book) {
-        if (book == null) {
-            return null;
-        }
+        if (book == null) return null;
 
         return new BookDTO(
                 book.getId(),
@@ -39,15 +36,10 @@ public class BookMapper {
     }
 
     /**
-     * Convierte un {@link BookDTO} en una entidad {@link Book}.
-     *
-     * @param bookDTO DTO BookDTO
-     * @return entidad equivalente o null si el parámetro es null
+     * Convierte BookDTO → Book
      */
     public static Book toEntity(BookDTO bookDTO) {
-        if (bookDTO == null) {
-            return null;
-        }
+        if (bookDTO == null) return null;
 
         return new Book(
                 bookDTO.getId(),
