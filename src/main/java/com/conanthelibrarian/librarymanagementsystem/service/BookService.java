@@ -59,4 +59,11 @@ public interface BookService {
      * @return lista de libros del género indicado
      */
     List<BookDTO> getBooksByGenre(Genre genre);
+
+    /**
+     * Recupera todos los libros que actualmente están en préstamo.
+     *
+     * @return lista de libros en préstamo en formato DTO
+     */
+    List<BookDTO> getBooksCurrentlyOnLoan();
 }

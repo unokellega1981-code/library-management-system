@@ -3,6 +3,7 @@ package com.conanthelibrarian.librarymanagementsystem.repository;
 import com.conanthelibrarian.librarymanagementsystem.constants.Genre;
 import com.conanthelibrarian.librarymanagementsystem.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -35,4 +36,23 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
      *         Devuelve una lista vacía si no se encuentran coincidencias.
      */
     List<Book> findByGenre(Genre genre);
+
+    /**
+     * Recupera todos los libros que actualmente están en préstamo.
+     *
+     * <p>Un libro se considera en préstamo si existe al menos un registro
+     * en la entidad Loan asociado a él cuya fecha de devolución (dueDate)
+     * sea null.</p>
+     *
+     * <p>La consulta utiliza JPQL para relacionar Book con Loan.</p>
+     *
+     * @return lista de {@link Book} que tienen un préstamo activo
+     */
+    @Query("""
+       SELECT DISTINCT b
+       FROM Book b
+       JOIN Loan l ON l.book = b
+       WHERE l.dueDate IS NULL
+       """)
+    List<Book> findBooksCurrentlyOnLoan();
 }

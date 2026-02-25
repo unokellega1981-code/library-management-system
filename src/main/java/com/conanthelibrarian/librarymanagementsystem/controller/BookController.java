@@ -1,5 +1,6 @@
 package com.conanthelibrarian.librarymanagementsystem.controller;
 
+import com.conanthelibrarian.librarymanagementsystem.constants.Genre;
 import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.service.BookService;
 import jakarta.validation.Valid;
@@ -87,5 +88,35 @@ public class BookController {
     public ResponseEntity<Void> deleteBook(@PathVariable Integer id) {
         bookService.deleteBook(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Recupera todos los libros que pertenecen a un género específico.
+     *
+     * <p>Este endpoint permite filtrar los libros registrados en el sistema
+     * según el género indicado en la URL.</p>
+     *
+     * <p>Si no existen libros para el género especificado,
+     * se devuelve una lista vacía con estado 200 OK.</p>
+     *
+     * @param genre género de los libros que se desea buscar
+     * @return lista de libros en formato {@link BookDTO} que pertenecen al género indicado
+     */
+    @GetMapping("/genre/{genre}")
+    public ResponseEntity<List<BookDTO>> getBooksByGenre(@PathVariable Genre genre) {
+        return ResponseEntity.ok(bookService.getBooksByGenre(genre));
+    }
+
+    /**
+     * Recupera todos los libros que actualmente están en préstamo.
+     *
+     * <p>Un libro se considera en préstamo si tiene al menos un préstamo
+     * activo (dueDate == null).</p>
+     *
+     * @return lista de libros en formato {@link BookDTO}
+     */
+    @GetMapping("/on-loan")
+    public ResponseEntity<List<BookDTO>> getBooksCurrentlyOnLoan() {
+        return ResponseEntity.ok(bookService.getBooksCurrentlyOnLoan());
     }
 }

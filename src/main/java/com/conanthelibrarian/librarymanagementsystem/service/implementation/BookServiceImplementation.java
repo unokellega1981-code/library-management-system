@@ -119,4 +119,15 @@ public class BookServiceImplementation implements BookService {
                 .map(BookMapper::toDTO)
                 .toList();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<BookDTO> getBooksCurrentlyOnLoan() {
+        return bookRepository.findBooksCurrentlyOnLoan()
+                .stream()
+                .map(BookMapper::toDTO)
+                .toList();
+    }
 }
