@@ -109,4 +109,15 @@ public class UserServiceImplementation implements UserService {
 
         userRepository.delete(existingUser);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserDTO> getUsersWithMoreThanXActiveLoans(Integer minLoans) {
+        return userRepository.findUsersWithMoreThanXActiveLoans(minLoans)
+                .stream()
+                .map(UserMapper::toDTO)
+                .toList();
+    }
 }
