@@ -1,18 +1,25 @@
 package com.conanthelibrarian.librarymanagementsystem.constants;
 
 /**
- * Enum que representa los roles disponibles en el sistema.
+ * Enumerado que representa los roles de usuario dentro del sistema.
  *
- * <p>Según los requisitos del proyecto, únicamente existen dos roles:</p>
+ * <p>
+ * Existen dos tipos de usuarios:
  * <ul>
- *     <li>{@link #MEMBER}: usuario normal de la biblioteca (puede pedir libros prestados)</li>
- *     <li>{@link #STAFF}: personal de la biblioteca (puede realizar tareas de gestión)</li>
+ *     <li>MEMBER: Usuario estándar que puede solicitar préstamos.</li>
+ *     <li>STAFF: Personal de la biblioteca con permisos de gestión.</li>
  * </ul>
- *
- * <p>Normalmente, este enum se almacena en base de datos como texto usando
- * {@code @Enumerated(EnumType.STRING)} para evitar problemas si el orden del enum cambia.</p>
+ * </p>
  */
 public enum Role {
+
+    /**
+     * Usuario estándar del sistema.
+     */
     MEMBER,
+
+    /**
+     * Personal de la biblioteca.
+     */
     STAFF
 }

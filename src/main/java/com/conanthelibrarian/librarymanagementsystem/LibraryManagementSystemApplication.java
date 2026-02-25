@@ -4,28 +4,33 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Punto de entrada principal de la aplicación Library Management System.
+ * Clase principal de arranque del sistema de gestión de biblioteca.
  *
- * <p>Esta clase se encarga de arrancar Spring Boot y levantar el contexto de Spring,
- * además del servidor embebido (Tomcat por defecto).</p>
+ * <p>
+ * Esta clase inicia la aplicación Spring Boot y configura automáticamente
+ * el contexto de Spring, incluyendo todos los componentes del sistema
+ * como controladores, servicios, repositorios y la conexión con la base
+ * de datos PostgreSQL.
+ * </p>
  *
- * <p>La anotación {@link SpringBootApplication} activa:</p>
+ * <p>
+ * El sistema permite gestionar:
  * <ul>
- *     <li>El auto-configurado de Spring Boot</li>
- *     <li>El escaneo de componentes (component scanning) a partir de este paquete</li>
- *     <li>La configuración de Spring para trabajar con anotaciones</li>
+ *     <li>Libros</li>
+ *     <li>Usuarios</li>
+ *     <li>Préstamos</li>
  * </ul>
+ * </p>
  *
- * <p>En un proyecto real, esta clase debe mantenerse lo más simple posible y no debería
- * contener lógica de negocio.</p>
+ * @author Juan Antonio Carrera González
  */
 @SpringBootApplication
 public class LibraryManagementSystemApplication {
 
     /**
-     * Método principal que arranca la aplicación.
+     * Método principal que actúa como punto de entrada de la aplicación.
      *
-     * @param args argumentos de arranque de la aplicación
+     * @param args argumentos recibidos por línea de comandos
      */
     public static void main(String[] args) {
         SpringApplication.run(LibraryManagementSystemApplication.class, args);
