@@ -5,24 +5,28 @@ import com.conanthelibrarian.librarymanagementsystem.dto.UserDTO;
 import java.util.List;
 
 /**
- * Servicio que define las operaciones de negocio relacionadas con usuarios.
+ * Servicio para la gestión de usuarios.
  *
- * <p>En este proyecto, los usuarios pueden tener rol MEMBER o STAFF.</p>
+ * <p>
+ * Define las operaciones de negocio relacionadas con los usuarios
+ * del sistema. Utiliza DTOs para desacoplar la capa de persistencia
+ * de la capa de presentación.
+ * </p>
  */
 public interface UserService {
 
     /**
-     * Obtiene todos los usuarios del sistema.
+     * Obtiene todos los usuarios.
      *
      * @return lista de usuarios en formato DTO
      */
     List<UserDTO> getAllUsers();
 
     /**
-     * Obtiene un usuario por su identificador.
+     * Obtiene un usuario por su ID.
      *
      * @param id identificador del usuario
-     * @return usuario en formato DTO
+     * @return usuario encontrado en formato DTO
      */
     UserDTO getUserById(Integer id);
 
@@ -38,23 +42,15 @@ public interface UserService {
      * Actualiza un usuario existente.
      *
      * @param id      identificador del usuario
-     * @param userDTO datos nuevos del usuario
+     * @param userDTO nuevos datos
      * @return usuario actualizado en formato DTO
      */
     UserDTO updateUser(Integer id, UserDTO userDTO);
 
     /**
-     * Elimina un usuario por su identificador.
+     * Elimina un usuario por su ID.
      *
      * @param id identificador del usuario
      */
     void deleteUser(Integer id);
-
-    /**
-     * Recupera todos los usuarios que tienen más de X préstamos activos.
-     *
-     * @param minLoans número mínimo de préstamos activos
-     * @return lista de usuarios en formato DTO
-     */
-    List<UserDTO> getUsersWithMoreThanXActiveLoans(Integer minLoans);
 }

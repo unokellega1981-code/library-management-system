@@ -1,6 +1,5 @@
 package com.conanthelibrarian.librarymanagementsystem.service.implementation;
 
-import com.conanthelibrarian.librarymanagementsystem.constants.Genre;
 import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.entity.Book;
 import com.conanthelibrarian.librarymanagementsystem.exception.ResourceNotFoundException;
@@ -12,33 +11,35 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Implementación del servicio {@link BookService}.
- *
- * <p>Esta clase contiene la lógica de negocio relacionada con libros y actúa como puente
- * entre los controllers (API) y los repositories (persistencia).</p>
- *
- * <p>En esta implementación se utiliza {@link BookRepository} para acceder a base de datos
- * y {@link BookMapper} para convertir entre entidades y DTOs.</p>
+ * Implementación del servicio de gestión de libros.
+ * <p>
+ * Esta clase contiene la lógica de negocio relacionada con la entidad Book.
+ * Se encarga de interactuar con el repositorio, aplicar validaciones
+ * y transformar entidades a DTOs y viceversa mediante el BookMapper.
+ * <p>
+ * Responsabilidades:
+ * - Obtener todos los libros
+ * - Obtener libro por ID
+ * - Crear libros
+ * - Actualizar libros existentes
+ * - Eliminar libros
+ * <p>
+ * Lanza:
+ * - ResourceNotFoundException cuando no existe el recurso solicitado
  */
 @Service
 public class BookServiceImplementation implements BookService {
 
     private final BookRepository bookRepository;
 
-    /**
-     * Constructor para inyección de dependencias.
-     *
-     * <p>Spring inyectará automáticamente el {@link BookRepository} gracias a que
-     * esta clase está anotada con {@link Service}.</p>
-     *
-     * @param bookRepository repositorio de libros
-     */
     public BookServiceImplementation(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
 
     /**
-     * {@inheritDoc}
+     * Obtiene todos los libros registrados en el sistema.
+     *
+     * @return Lista de libros en formato DTO.
      */
     @Override
     public List<BookDTO> getAllBooks() {
@@ -49,7 +50,11 @@ public class BookServiceImplementation implements BookService {
     }
 
     /**
-     * {@inheritDoc}
+     * Obtiene un libro por su identificador.
+     *
+     * @param id ID del libro a buscar.
+     * @return Libro encontrado en formato DTO.
+     * @throws ResourceNotFoundException si no existe ningún libro con el ID indicado.
      */
     @Override
     public BookDTO getBookById(Integer id) {
@@ -60,13 +65,16 @@ public class BookServiceImplementation implements BookService {
     }
 
     /**
-     * {@inheritDoc}
+     * Crea un nuevo libro en el sistema.
+     * El ID se establece automáticamente ignorando cualquier valor recibido.
+     *
+     * @param bookDTO Datos del libro a crear.
+     * @return Libro creado en formato DTO.
      */
     @Override
     public BookDTO createBook(BookDTO bookDTO) {
         Book book = BookMapper.toEntity(bookDTO);
 
-        // Seguridad extra: el ID debe generarlo la base de datos.
         book.setId(null);
 
         Book savedBook = bookRepository.save(book);
@@ -74,60 +82,42 @@ public class BookServiceImplementation implements BookService {
     }
 
     /**
-     * {@inheritDoc}
+     * Actualiza los datos de un libro existente.
+     *
+     * @param id      ID del libro a actualizar.
+     * @param bookDTO Datos actualizados.
+     * @return Libro actualizado en formato DTO.
+     * @throws ResourceNotFoundException si el libro no existe.
      */
     @Override
     public BookDTO updateBook(Integer id, BookDTO bookDTO) {
 
-        // 1) Comprobar que el libro existe
         Book existingBook = bookRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("No se ha encontrado ningún libro con el ID: " + id));
 
-        // 2) Actualizar campos
         existingBook.setTitle(bookDTO.getTitle());
         existingBook.setAuthor(bookDTO.getAuthor());
         existingBook.setIsbn(bookDTO.getIsbn());
         existingBook.setGenre(bookDTO.getGenre());
         existingBook.setAvailableCopies(bookDTO.getAvailableCopies());
 
-        // 3) Guardar cambios
         Book updatedBook = bookRepository.save(existingBook);
 
         return BookMapper.toDTO(updatedBook);
     }
 
     /**
-     * {@inheritDoc}
+     * Elimina un libro del sistema.
+     *
+     * @param id ID del libro a eliminar.
+     * @throws ResourceNotFoundException si el libro no existe.
      */
     @Override
     public void deleteBook(Integer id) {
 
-        // Comprobar que existe antes de borrar
         Book existingBook = bookRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("No se ha encontrado ningún libro con el ID: " + id));
 
         bookRepository.delete(existingBook);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<BookDTO> getBooksByGenre(Genre genre) {
-        return bookRepository.findByGenre(genre)
-                .stream()
-                .map(BookMapper::toDTO)
-                .toList();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<BookDTO> getBooksCurrentlyOnLoan() {
-        return bookRepository.findBooksCurrentlyOnLoan()
-                .stream()
-                .map(BookMapper::toDTO)
-                .toList();
     }
 }

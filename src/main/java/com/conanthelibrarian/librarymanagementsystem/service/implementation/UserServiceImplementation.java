@@ -11,33 +11,38 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Implementación del servicio {@link UserService}.
- *
- * <p>Esta clase contiene la lógica de negocio relacionada con usuarios y actúa como puente
- * entre los controllers (API) y los repositories (persistencia).</p>
- *
- * <p>En esta implementación se utiliza {@link UserRepository} para acceder a base de datos
- * y {@link UserMapper} para convertir entre entidades y DTOs.</p>
+ * Implementación del servicio de gestión de usuarios.
+ * <p>
+ * Contiene la lógica de negocio asociada a la entidad User.
+ * Gestiona las operaciones CRUD básicas y transforma los datos
+ * entre entidades y DTOs usando UserMapper.
+ * <p>
+ * Responsabilidades:
+ * - Obtener todos los usuarios
+ * - Obtener usuario por ID
+ * - Crear usuarios
+ * - Actualizar usuarios
+ * - Eliminar usuarios
+ * <p>
+ * Lanza:
+ * - ResourceNotFoundException cuando el usuario no existe
+ * <p>
+ * Nota:
+ * En un entorno real, el password no debería exponerse en el DTO.
  */
 @Service
 public class UserServiceImplementation implements UserService {
 
     private final UserRepository userRepository;
 
-    /**
-     * Constructor para inyección de dependencias.
-     *
-     * <p>Spring inyectará automáticamente el {@link UserRepository} gracias a que
-     * esta clase está anotada con {@link Service}.</p>
-     *
-     * @param userRepository repositorio de usuarios
-     */
     public UserServiceImplementation(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     /**
-     * {@inheritDoc}
+     * Obtiene todos los usuarios registrados.
+     *
+     * @return Lista de usuarios en formato DTO.
      */
     @Override
     public List<UserDTO> getAllUsers() {
@@ -48,7 +53,11 @@ public class UserServiceImplementation implements UserService {
     }
 
     /**
-     * {@inheritDoc}
+     * Obtiene un usuario por su identificador.
+     *
+     * @param id ID del usuario.
+     * @return Usuario encontrado en formato DTO.
+     * @throws ResourceNotFoundException si el usuario no existe.
      */
     @Override
     public UserDTO getUserById(Integer id) {
@@ -60,13 +69,16 @@ public class UserServiceImplementation implements UserService {
     }
 
     /**
-     * {@inheritDoc}
+     * Crea un nuevo usuario en el sistema.
+     * El ID se genera automáticamente.
+     *
+     * @param userDTO Datos del usuario a crear.
+     * @return Usuario creado en formato DTO.
      */
     @Override
     public UserDTO createUser(UserDTO userDTO) {
         User user = UserMapper.toEntity(userDTO);
 
-        // Seguridad extra: el ID debe generarlo la base de datos.
         user.setId(null);
 
         User savedUser = userRepository.save(user);
@@ -74,50 +86,43 @@ public class UserServiceImplementation implements UserService {
     }
 
     /**
-     * {@inheritDoc}
+     * Actualiza los datos de un usuario existente.
+     *
+     * @param id ID del usuario a actualizar.
+     * @param userDTO Nuevos datos.
+     * @return Usuario actualizado en formato DTO.
+     * @throws ResourceNotFoundException si el usuario no existe.
      */
     @Override
     public UserDTO updateUser(Integer id, UserDTO userDTO) {
 
-        // 1) Comprobar que el usuario existe
         User existingUser = userRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("No se ha encontrado ningún usuario con el ID: " + id)
         );
 
-        // 2) Actualizar campos
         existingUser.setName(userDTO.getName());
         existingUser.setEmail(userDTO.getEmail());
         existingUser.setPassword(userDTO.getPassword());
         existingUser.setRole(userDTO.getRole());
 
-        // 3) Guardar cambios
         User updatedUser = userRepository.save(existingUser);
 
         return UserMapper.toDTO(updatedUser);
     }
 
     /**
-     * {@inheritDoc}
+     * Elimina un usuario del sistema.
+     *
+     * @param id ID del usuario.
+     * @throws ResourceNotFoundException si el usuario no existe.
      */
     @Override
     public void deleteUser(Integer id) {
 
-        // Comprobar que existe antes de borrar
         User existingUser = userRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("No se ha encontrado ningún usuario con el ID: " + id)
         );
 
         userRepository.delete(existingUser);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<UserDTO> getUsersWithMoreThanXActiveLoans(Integer minLoans) {
-        return userRepository.findUsersWithMoreThanXActiveLoans(minLoans)
-                .stream()
-                .map(UserMapper::toDTO)
-                .toList();
     }
 }

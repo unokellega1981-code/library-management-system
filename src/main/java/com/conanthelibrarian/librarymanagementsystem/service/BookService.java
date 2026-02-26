@@ -1,20 +1,31 @@
 package com.conanthelibrarian.librarymanagementsystem.service;
 
-import com.conanthelibrarian.librarymanagementsystem.constants.Genre;
 import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 
 import java.util.List;
 
 /**
- * Servicio que define las operaciones de negocio relacionadas con libros.
+ * Servicio para la gestión de libros.
  *
- * <p>Esta interfaz representa la capa intermedia entre los controllers (API)
- * y los repositories (persistencia).</p>
+ * <p>
+ * Define las operaciones de negocio relacionadas con los libros
+ * del sistema. Trabaja exclusivamente con DTOs para evitar exponer
+ * directamente las entidades JPA.
+ * </p>
+ *
+ * <p>
+ * Las implementaciones de esta interfaz deben encargarse de:
+ * <ul>
+ *     <li>Interactuar con el repositorio</li>
+ *     <li>Aplicar reglas de negocio</li>
+ *     <li>Convertir entre entidad y DTO mediante mappers</li>
+ * </ul>
+ * </p>
  */
 public interface BookService {
 
     /**
-     * Obtiene todos los libros disponibles en el sistema.
+     * Obtiene todos los libros del sistema.
      *
      * @return lista de libros en formato DTO
      */
@@ -24,7 +35,7 @@ public interface BookService {
      * Obtiene un libro por su identificador.
      *
      * @param id identificador del libro
-     * @return libro en formato DTO
+     * @return libro encontrado en formato DTO
      */
     BookDTO getBookById(Integer id);
 
@@ -40,7 +51,7 @@ public interface BookService {
      * Actualiza un libro existente.
      *
      * @param id      identificador del libro a actualizar
-     * @param bookDTO datos nuevos del libro
+     * @param bookDTO nuevos datos del libro
      * @return libro actualizado en formato DTO
      */
     BookDTO updateBook(Integer id, BookDTO bookDTO);
@@ -48,22 +59,7 @@ public interface BookService {
     /**
      * Elimina un libro por su identificador.
      *
-     * @param id identificador del libro
+     * @param id identificador del libro a eliminar
      */
     void deleteBook(Integer id);
-
-    /**
-     * Recupera todos los libros de un género específico.
-     *
-     * @param genre género a buscar
-     * @return lista de libros del género indicado
-     */
-    List<BookDTO> getBooksByGenre(Genre genre);
-
-    /**
-     * Recupera todos los libros que actualmente están en préstamo.
-     *
-     * @return lista de libros en préstamo en formato DTO
-     */
-    List<BookDTO> getBooksCurrentlyOnLoan();
 }

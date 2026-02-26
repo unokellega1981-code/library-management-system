@@ -5,53 +5,55 @@ import com.conanthelibrarian.librarymanagementsystem.dto.LoanDTO;
 import java.util.List;
 
 /**
- * Servicio que define las operaciones de negocio relacionadas con préstamos.
+ * Servicio para la gestión de préstamos.
  *
- * <p>Un préstamo relaciona un usuario con un libro, e incluye fechas
- * de préstamo y de devolución prevista.</p>
+ * <p>
+ * Define las operaciones relacionadas con los préstamos de libros.
+ * La implementación debe incluir validaciones como:
+ * <ul>
+ *     <li>Comprobar que el usuario existe</li>
+ *     <li>Comprobar que el libro existe</li>
+ *     <li>Verificar disponibilidad de copias</li>
+ *     <li>Actualizar copias disponibles</li>
+ * </ul>
+ * </p>
  */
 public interface LoanService {
 
     /**
-     * Obtiene todos los préstamos registrados.
+     * Obtiene todos los préstamos.
      *
      * @return lista de préstamos en formato DTO
      */
     List<LoanDTO> getAllLoans();
 
     /**
-     * Obtiene un préstamo por su identificador.
+     * Obtiene un préstamo por su ID.
      *
      * @param id identificador del préstamo
-     * @return préstamo en formato DTO
+     * @return préstamo encontrado en formato DTO
      */
     LoanDTO getLoanById(Integer id);
 
     /**
      * Crea un nuevo préstamo.
      *
-     * <p>IMPORTANTE: aquí normalmente se aplican reglas extra, por ejemplo:</p>
-     * <ul>
-     *     <li>El libro debe tener copias disponibles</li>
-     *     <li>Se debe reducir availableCopies en 1</li>
-     * </ul>
-     *
-     * @param loanDTO datos del préstamo a crear
-     * @return préstamo creado
+     * @param loanDTO datos del préstamo
+     * @return préstamo creado en formato DTO
      */
     LoanDTO createLoan(LoanDTO loanDTO);
 
     /**
      * Actualiza un préstamo existente.
      *
-     * @param id identificador del préstamo
-     * @param loanDTO datos nuevos del préstamo
-     * @return préstamo actualizado en formato DTO
+     * @param id      identificador del préstamo
+     * @param loanDTO nuevos datos
+     * @return préstamo actualizado
      */
     LoanDTO updateLoan(Integer id, LoanDTO loanDTO);
 
     /**
-     * Elimina un préstamo por su identificador.
+     * Elimina un préstamo.
      *
      * @param id identificador del préstamo
      */
