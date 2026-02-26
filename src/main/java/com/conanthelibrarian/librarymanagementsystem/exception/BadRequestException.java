@@ -4,24 +4,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * Excepción que se lanza cuando el cliente envía una petición inválida.
- *
- * <p>Ejemplos típicos:</p>
- * <ul>
- *     <li>Intentar crear un préstamo sin copias disponibles</li>
- *     <li>Enviar datos incoherentes (por ejemplo, fechas inválidas)</li>
- * </ul>
- *
- * <p>Gracias a {@link ResponseStatus}, Spring responderá automáticamente con un
- * HTTP 400 (Bad Request) cuando esta excepción sea lanzada.</p>
+ * Excepción lanzada cuando la solicitud del cliente es inválida
+ * o viola una regla de negocio del sistema.
+ * <p>
+ * Devuelve automáticamente un estado HTTP 400 (BAD_REQUEST)
+ * gracias a la anotación @ResponseStatus.
+ * <p>
+ * Se utiliza en situaciones como:
+ * - Intentar prestar un libro sin copias disponibles.
+ * - Intentar eliminar un préstamo no devuelto.
+ * - Enviar datos inconsistentes o inválidos.
  */
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class BadRequestException extends RuntimeException{
+public class BadRequestException extends RuntimeException {
 
     /**
-     * Constructor con mensaje personalizado.
+     * Constructor que recibe el mensaje descriptivo del error.
      *
-     * @param message mensaje de error
+     * @param message Mensaje detallando la causa del error.
      */
     public BadRequestException(String message) {
         super(message);

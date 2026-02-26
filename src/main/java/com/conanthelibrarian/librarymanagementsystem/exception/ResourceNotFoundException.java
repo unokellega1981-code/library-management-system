@@ -4,26 +4,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * Excepción que se lanza cuando un recurso solicitado no existe en base de datos.
- *
- * <p>Ejemplos típicos:</p>
- * <ul>
- *     <li>Buscar un libro por ID y no encontrarlo</li>
- *     <li>Buscar un usuario por ID y no encontrarlo</li>
- *     <li>Buscar un préstamo por ID y no encontrarlo</li>
- * </ul>
- *
- * <p>Gracias a {@link ResponseStatus}, cuando esta excepción se lanza desde un
- * controlador (o desde un service llamado por un controlador), Spring responderá
- * automáticamente con un HTTP 404 (Not Found).</p>
+ * Excepción lanzada cuando un recurso solicitado no existe en el sistema.
+ * <p>
+ * Se utiliza en la capa de servicio cuando no se encuentra
+ * una entidad en la base de datos (por ejemplo, Libro, Usuario o Préstamo).
+ * <p>
+ * Esta excepción devuelve automáticamente un estado HTTP 404 (NOT_FOUND)
+ * gracias a la anotación @ResponseStatus.
+ * <p>
+ * Ejemplos de uso:
+ * - Buscar un libro por ID inexistente.
+ * - Buscar un usuario que no está registrado.
+ * - Intentar acceder a un préstamo que no existe.
  */
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class ResourceNotFoundException extends RuntimeException {
 
     /**
-     * Constructor con mensaje personalizado.
+     * Constructor que recibe el mensaje descriptivo del error.
      *
-     * @param message mensaje de error
+     * @param message Mensaje detallando la causa de la excepción.
      */
     public ResourceNotFoundException(String message) {
         super(message);
