@@ -14,69 +14,67 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Manejador global de excepciones de la aplicación.
- *
- * <p>Esta clase intercepta excepciones lanzadas desde cualquier Controller
- * y devuelve respuestas HTTP limpias y coherentes.</p>
- *
- * <p>Gracias a esto:</p>
- * <ul>
- *     <li>No devolvemos stacktraces al cliente</li>
- *     <li>Devolvemos códigos HTTP correctos</li>
- *     <li>Unificamos el formato de errores</li>
- * </ul>
+ * Manejador global de excepciones para toda la aplicación.
+ * <p>
+ * Esta clase centraliza la gestión de errores lanzados por los
+ * controladores REST, permitiendo devolver respuestas JSON
+ * estructuradas y coherentes.
+ * <p>
+ * Evita duplicar lógica de manejo de errores en cada controlador
+ * y garantiza uniformidad en las respuestas HTTP.
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     /**
-     * Maneja errores cuando un recurso no existe.
+     * Maneja excepciones del tipo {@link ResourceNotFoundException}.
+     * <p>
+     * Se lanza cuando un recurso solicitado no existe en la base de datos.
      *
-     * @param ex excepción lanzada
-     * @return respuesta 404 con detalles del error
+     * @param ex Excepción lanzada.
+     * @return Respuesta HTTP 404 con información detallada del error.
      */
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {
 
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
-        response.put("status", 404);
-        response.put("error", "NO_ENCONTRADO");
+        response.put("status", HttpStatus.NOT_FOUND.value());
+        response.put("error", "NO ENCONTRADO");
         response.put("message", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     /**
-     * Maneja errores de tipo BadRequest (reglas de negocio).
+     * Maneja excepciones del tipo {@link BadRequestException}.
+     * <p>
+     * Se lanza cuando la petición del cliente es inválida o contiene
+     * datos incorrectos desde el punto de vista lógico.
      *
-     * @param ex excepción lanzada
-     * @return respuesta 400 con detalles del error
+     * @param ex Excepción lanzada.
+     * @return Respuesta HTTP 400 con detalles del error.
      */
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<Map<String, Object>> handleBadRequest(BadRequestException ex) {
 
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
-        response.put("status", 400);
-        response.put("error", "PETICION_INCORRECTA");
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("error", "PETICION INCORRECTA");
         response.put("message", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     /**
-     * Maneja errores de validación cuando falla un @Valid.
+     * Maneja errores de validación generados por {@link jakarta.validation.Valid}.
+     * <p>
+     * Se activa cuando un DTO no cumple las restricciones definidas
+     * mediante anotaciones como {@code @NotNull}, {@code @NotBlank}, etc.
      *
-     * <p>Por ejemplo:</p>
-     * <ul>
-     *     <li>title vacío</li>
-     *     <li>availableCopies menor que 1</li>
-     *     <li>email inválido</li>
-     * </ul>
-     *
-     * @param ex excepción de validación
-     * @return respuesta 400 con un mapa campo -> error
+     * @param ex Excepción lanzada por Spring al fallar la validación.
+     * @return Respuesta HTTP 400 con el detalle de cada campo inválido.
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationErrors(MethodArgumentNotValidException ex) {
@@ -89,29 +87,29 @@ public class GlobalExceptionHandler {
 
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
-        response.put("status", 400);
-        response.put("error", "ERROR_DE_VALIDACION");
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("error", "ERROR DE VALIDACION");
         response.put("messages", fieldErrors);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-
     }
 
     /**
-     * Maneja cualquier error inesperado no controlado.
+     * Maneja cualquier excepción no controlada explícitamente.
+     * <p>
+     * Actúa como mecanismo de seguridad para evitar que errores internos
+     * expongan información sensible al cliente.
      *
-     * <p>Esto evita que el cliente reciba stacktraces internos.</p>
-     *
-     * @param ex excepción general
-     * @return respuesta 500
+     * @param ex Excepción inesperada.
+     * @return Respuesta HTTP 500 con mensaje genérico.
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
 
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
-        response.put("status", 500);
-        response.put("error", "ERROR_INTERNO_DEL_SERVIDOR");
+        response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.put("error", "ERROR INTERNO DEL SERVIDOR");
         response.put("message", "Ha ocurrido un error inesperado");
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
