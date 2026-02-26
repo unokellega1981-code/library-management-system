@@ -3,19 +3,20 @@ package com.conanthelibrarian.librarymanagementsystem.controller;
 import com.conanthelibrarian.librarymanagementsystem.dto.UserDTO;
 import com.conanthelibrarian.librarymanagementsystem.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 /**
- * Controlador REST encargado de gestionar las operaciones relacionadas con usuarios.
- *
- * <p>Expone endpoints CRUD para crear, consultar, actualizar y eliminar usuarios
- * del sistema.</p>
- *
- * <p>Este controlador trabaja con DTOs ({@link UserDTO}) para evitar exponer
- * directamente las entidades JPA.</p>
+ * Controlador REST para la gestión de usuarios.
+ * <p>
+ * Expone los endpoints HTTP relacionados con la entidad User.
+ * Actúa como capa intermedia entre el cliente (API REST)
+ * y la capa de servicio.
+ * <p>
+ * Base URL: /api/users
  */
 @RestController
 @RequestMapping("/api/users")
@@ -23,11 +24,6 @@ public class UserController {
 
     private final UserService userService;
 
-    /**
-     * Constructor para inyección de dependencias.
-     *
-     * @param userService servicio de usuarios
-     */
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -35,7 +31,7 @@ public class UserController {
     /**
      * Obtiene todos los usuarios registrados.
      *
-     * @return lista de usuarios en formato DTO
+     * @return Lista de usuarios en formato DTO.
      */
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
@@ -43,10 +39,10 @@ public class UserController {
     }
 
     /**
-     * Obtiene un usuario por su ID.
+     * Obtiene un usuario por su identificador.
      *
-     * @param id identificador del usuario
-     * @return usuario encontrado en formato DTO
+     * @param id ID del usuario.
+     * @return Usuario encontrado.
      */
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Integer id) {
@@ -56,22 +52,21 @@ public class UserController {
     /**
      * Crea un nuevo usuario.
      *
-     * <p>Los datos se validan automáticamente gracias a {@code @Valid}.</p>
-     *
-     * @param userDTO datos del usuario a crear
-     * @return usuario creado
+     * @param userDTO Datos del usuario a crear.
+     * @return Usuario creado.
      */
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) {
-        return ResponseEntity.ok(userService.createUser(userDTO));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userService.createUser(userDTO));
     }
 
     /**
      * Actualiza un usuario existente.
      *
-     * @param id identificador del usuario
-     * @param userDTO datos nuevos del usuario
-     * @return usuario actualizado
+     * @param id      ID del usuario.
+     * @param userDTO Datos actualizados.
+     * @return Usuario actualizado.
      */
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Integer id, @Valid @RequestBody UserDTO userDTO) {
@@ -79,29 +74,14 @@ public class UserController {
     }
 
     /**
-     * Elimina un usuario por su ID.
+     * Elimina un usuario.
      *
-     * @param id identificador del usuario
-     * @return respuesta 204 No Content si se elimina correctamente
+     * @param id ID del usuario a eliminar.
+     * @return Respuesta sin contenido (204).
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
-    }
-
-    /**
-     * Recupera los usuarios que tienen más de una cantidad determinada
-     * de préstamos activos.
-     *
-     * @param minLoans número mínimo de préstamos activos
-     * @return lista de usuarios en formato {@link UserDTO}
-     */
-    @GetMapping("/with-active-loans/{minLoans}")
-    public ResponseEntity<List<UserDTO>> getUsersWithMoreThanXActiveLoans(@PathVariable Integer minLoans) {
-
-        return ResponseEntity.ok(
-                userService.getUsersWithMoreThanXActiveLoans(minLoans)
-        );
     }
 }

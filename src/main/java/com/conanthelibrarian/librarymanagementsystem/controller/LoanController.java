@@ -3,21 +3,20 @@ package com.conanthelibrarian.librarymanagementsystem.controller;
 import com.conanthelibrarian.librarymanagementsystem.dto.LoanDTO;
 import com.conanthelibrarian.librarymanagementsystem.service.LoanService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 /**
- * Controlador REST encargado de gestionar las operaciones relacionadas con préstamos.
- *
- * <p>Expone endpoints CRUD para crear, consultar, actualizar y eliminar préstamos.</p>
- *
- * <p>Este controlador trabaja con DTOs ({@link LoanDTO}) para evitar exponer
- * directamente las entidades JPA.</p>
- *
- * <p>IMPORTANTE: la lógica de negocio (comprobar stock, actualizar copias disponibles, etc.)
- * se gestiona en la capa Service, no aquí.</p>
+ * Controlador REST para la gestión de préstamos.
+ * <p>
+ * Expone los endpoints HTTP relacionados con la entidad Loan.
+ * Actúa como capa intermedia entre el cliente (API REST)
+ * y la capa de servicio.
+ * <p>
+ * Base URL: /api/loans
  */
 @RestController
 @RequestMapping("/api/loans")
@@ -25,19 +24,14 @@ public class LoanController {
 
     private final LoanService loanService;
 
-    /**
-     * Constructor para inyección de dependencias.
-     *
-     * @param loanService servicio de préstamos
-     */
     public LoanController(LoanService loanService) {
         this.loanService = loanService;
     }
 
     /**
-     * Obtiene todos los préstamos registrados en el sistema.
+     * Obtiene todos los préstamos registrados.
      *
-     * @return lista de préstamos en formato DTO
+     * @return Lista de préstamos en formato DTO.
      */
     @GetMapping
     public ResponseEntity<List<LoanDTO>> getAllLoans() {
@@ -47,8 +41,8 @@ public class LoanController {
     /**
      * Obtiene un préstamo por su ID.
      *
-     * @param id identificador del préstamo
-     * @return préstamo encontrado en formato DTO
+     * @param id ID del préstamo.
+     * @return Préstamo encontrado.
      */
     @GetMapping("/{id}")
     public ResponseEntity<LoanDTO> getLoanById(@PathVariable Integer id) {
@@ -58,37 +52,21 @@ public class LoanController {
     /**
      * Crea un nuevo préstamo.
      *
-     * <p>Los datos se validan automáticamente gracias a {@code @Valid}.</p>
-     *
-     * <p>IMPORTANTE: en la capa Service se aplican reglas como:</p>
-     * <ul>
-     *     <li>El usuario debe existir</li>
-     *     <li>El libro debe existir</li>
-     *     <li>El libro debe tener copias disponibles</li>
-     *     <li>Se reduce availableCopies en 1</li>
-     * </ul>
-     *
-     * @param loanDTO datos del préstamo a crear
-     * @return préstamo creado
+     * @param loanDTO Datos del préstamo a crear.
+     * @return Préstamo creado.
      */
     @PostMapping
     public ResponseEntity<LoanDTO> createLoan(@Valid @RequestBody LoanDTO loanDTO) {
-        return ResponseEntity.ok(loanService.createLoan(loanDTO));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(loanService.createLoan(loanDTO));
     }
 
     /**
      * Actualiza un préstamo existente.
      *
-     * <p>IMPORTANTE: si el préstamo cambia de libro, la capa Service se encarga de:</p>
-     * <ul>
-     *     <li>Devolver una copia al libro anterior</li>
-     *     <li>Comprobar stock del nuevo libro</li>
-     *     <li>Reducir copias del nuevo libro</li>
-     * </ul>
-     *
-     * @param id      identificador del préstamo
-     * @param loanDTO datos nuevos del préstamo
-     * @return préstamo actualizado
+     * @param id      ID del préstamo.
+     * @param loanDTO Datos actualizados.
+     * @return Préstamo actualizado.
      */
     @PutMapping("/{id}")
     public ResponseEntity<LoanDTO> updateLoan(@PathVariable Integer id, @Valid @RequestBody LoanDTO loanDTO) {
@@ -96,16 +74,10 @@ public class LoanController {
     }
 
     /**
-     * Elimina un préstamo por su ID.
+     * Elimina un préstamo.
      *
-     * <p>Solo se permite eliminar el registro si el préstamo ya ha sido devuelto
-     * (es decir, si dueDate no es null).</p>
-     *
-     * <p>Si el libro no ha sido devuelto, la capa Service lanzará una excepción
-     * indicando que no se puede borrar el registro.</p>
-     *
-     * @param id identificador del préstamo
-     * @return respuesta 204 No Content si se elimina correctamente
+     * @param id ID del préstamo a eliminar.
+     * @return Respuesta sin contenido (204).
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLoan(@PathVariable Integer id) {
