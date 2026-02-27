@@ -14,33 +14,50 @@ import com.conanthelibrarian.librarymanagementsystem.service.LoanService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
  * Implementación del servicio de gestión de préstamos.
- *
- * Esta clase contiene la lógica de negocio más compleja del sistema,
- * ya que gestiona relaciones entre usuarios y libros.
- *
- * Funcionalidades principales:
- * - Obtener todos los préstamos
- * - Obtener préstamo por ID
- * - Crear préstamo (verificando existencia de usuario y libro)
- * - Validar disponibilidad de copias antes de prestar
- * - Reducir el número de copias disponibles al crear préstamo
- * - Ajustar copias si se cambia el libro en una actualización
- * - Eliminar préstamo solo si el libro ha sido devuelto
- *
- * Anotaciones:
- * - @Transactional se usa para garantizar consistencia en operaciones
- *   que afectan a múltiples entidades (Libro + Préstamo).
- *
- * Excepciones:
- * - ResourceNotFoundException cuando usuario, libro o préstamo no existen
- * - BadRequestException cuando no hay copias disponibles
+ * <p>
+ * Esta clase contiene la lógica de negocio relacionada con la entidad Loan.
+ * Gestiona la relación entre usuarios y libros, incluyendo:
+ * <p>
+ * - Creación de préstamos
+ * - Actualización de préstamos
+ * - Eliminación de préstamos
+ * - Control de disponibilidad de copias
+ * <p>
+ * Características importantes:
+ * <p>
+ * 1. Verifica que el usuario y el libro existan antes de crear o actualizar un préstamo.
+ * 2. Comprueba que el libro tenga copias disponibles antes de prestarlo.
+ * 3. Reduce automáticamente el número de copias disponibles al crear un préstamo.
+ * 4. Si se cambia el libro en una actualización, ajusta correctamente las copias:
+ * - Devuelve una copia al libro anterior.
+ * - Resta una copia al nuevo libro.
+ * 5. Cálculo automático de la fecha de vencimiento (dueDate).
+ * 6. Solo permite eliminar un préstamo si el libro ha sido devuelto
+ * (returnedDate distinto de null).
+ * <p>
+ * Uso de @Transactional:
+ * Se utiliza en los métodos que modifican múltiples entidades
+ * (por ejemplo, libro + préstamo) para garantizar consistencia
+ * en caso de error.
+ * <p>
+ * Excepciones lanzadas:
+ * - ResourceNotFoundException: cuando no existe usuario, libro o préstamo.
+ * - BadRequestException: cuando no hay copias disponibles o
+ * cuando se intenta borrar un préstamo no devuelto.
  */
 @Service
 public class LoanServiceImplementation implements LoanService {
+
+    /**
+     * Duración estándar de un préstamo en días.
+     * Se define como constante para facilitar futuras modificaciones.
+     */
+    private static final int LOAN_DURATION_DAYS = 7;
 
     private final LoanRepository loanRepository;
     private final UserRepository userRepository;
@@ -59,10 +76,10 @@ public class LoanServiceImplementation implements LoanService {
      */
     @Override
     public List<LoanDTO> getAllLoans() {
-        return loanRepository.findAll()
-                .stream()
-                .map(LoanMapper::toDTO)
-                .toList();
+        return loanRepository.findAll().
+                stream().
+                map(LoanMapper::toDTO).
+                toList();
     }
 
     /**
@@ -74,51 +91,49 @@ public class LoanServiceImplementation implements LoanService {
      */
     @Override
     public LoanDTO getLoanById(Integer id) {
-        Loan loan = loanRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("No se ha encontrado ningún préstamo con el ID: " + id)
-        );
-
+        Loan loan = loanRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ningún préstamo con el ID: " + id));
         return LoanMapper.toDTO(loan);
     }
 
     /**
      * Crea un nuevo préstamo.
      *
+     * Reglas aplicadas:
      * - Verifica que el usuario exista.
      * - Verifica que el libro exista.
      * - Comprueba que haya copias disponibles.
      * - Reduce en una unidad las copias disponibles del libro.
+     * - Calcula automáticamente la fecha de vencimiento (dueDate)
+     *   sumando LOAN_DURATION_DAYS a loanDate.
      *
-     * @param loanDTO Datos del préstamo.
-     * @return Préstamo creado en formato DTO.
-     * @throws ResourceNotFoundException si usuario o libro no existen.
-     * @throws BadRequestException si no hay copias disponibles.
+     * Si el cliente envía un dueDate en el DTO, será ignorado.
      */
     @Transactional
     @Override
     public LoanDTO createLoan(LoanDTO loanDTO) {
 
-        User user = userRepository.findById(loanDTO.getUserId()).orElseThrow(() ->
-                new ResourceNotFoundException("No se ha encontrado ningún usuario con el ID: " + loanDTO.getUserId())
-        );
+        User user = userRepository.findById(loanDTO.getUserId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("No se ha encontrado ningún usuario con el ID: " + loanDTO.getUserId()));
 
-        Book book = bookRepository.findById(loanDTO.getBookId()).orElseThrow(() ->
-                new ResourceNotFoundException("No se ha encontrado ningún libro con el ID: " + loanDTO.getBookId())
-        );
+        Book book = bookRepository.findById(loanDTO.getBookId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("No se ha encontrado ningún libro con el ID: " + loanDTO.getBookId()));
 
         if (book.getAvailableCopies() == null || book.getAvailableCopies() <= 0) {
             throw new BadRequestException("No hay copias disponibles del libro con ID: " + book.getId());
         }
-
+        // Reducir copia disponible
         book.setAvailableCopies(book.getAvailableCopies() - 1);
         bookRepository.save(book);
 
         Loan loan = LoanMapper.toEntity(loanDTO);
-
         loan.setId(null);
-
         loan.setUser(user);
         loan.setBook(book);
+
+        // Cálculo automático del dueDate
+        loan.setDueDate(loan.getLoanDate().plusDays(LOAN_DURATION_DAYS));
 
         Loan savedLoan = loanRepository.save(loan);
 
@@ -133,30 +148,28 @@ public class LoanServiceImplementation implements LoanService {
      * - Comprueba disponibilidad del nuevo libro.
      * - Reduce en una unidad el nuevo libro.
      *
-     * @param id ID del préstamo a actualizar.
-     * @param loanDTO Nuevos datos.
-     * @return Préstamo actualizado en formato DTO.
-     * @throws ResourceNotFoundException si préstamo, usuario o libro no existen.
-     * @throws BadRequestException si el nuevo libro no tiene copias disponibles.
+     * Además:
+     * - Si se modifica loanDate, se recalcula automáticamente dueDate.
      */
     @Transactional
     @Override
     public LoanDTO updateLoan(Integer id, LoanDTO loanDTO) {
 
-        Loan existingLoan = loanRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("No se ha encontrado ningún préstamo con el ID: " + id)
-        );
+        Loan existingLoan = loanRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("No se ha encontrado ningún préstamo con el ID: " + id));
 
-        User user = userRepository.findById(loanDTO.getUserId()).orElseThrow(() ->
-                new ResourceNotFoundException("No se ha encontrado ningún usuario con el ID: " + loanDTO.getUserId())
-        );
+        User user = userRepository.findById(loanDTO.getUserId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("No se ha encontrado ningún usuario con el ID: " + loanDTO.getUserId()));
 
-        Book newBook = bookRepository.findById(loanDTO.getBookId()).orElseThrow(() ->
-                new ResourceNotFoundException("No se ha encontrado ningún libro con el ID: " + loanDTO.getBookId())
-        );
+        Book newBook = bookRepository.findById(loanDTO.getBookId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("No se ha encontrado ningún libro con el ID: " + loanDTO.getBookId()));
 
         Book oldBook = existingLoan.getBook();
 
+        // Si cambia el libro
         if (oldBook != null && !oldBook.getId().equals(newBook.getId())) {
 
             Integer oldCopies = oldBook.getAvailableCopies() == null ? 0 : oldBook.getAvailableCopies();
@@ -173,8 +186,12 @@ public class LoanServiceImplementation implements LoanService {
 
         existingLoan.setUser(user);
         existingLoan.setBook(newBook);
-        existingLoan.setLoanDate(loanDTO.getLoanDate());
-        existingLoan.setDueDate(loanDTO.getDueDate());
+
+        // 🔥 Si cambia loanDate, recalcular dueDate
+        if (loanDTO.getLoanDate() != null) {
+            existingLoan.setLoanDate(loanDTO.getLoanDate());
+            existingLoan.setDueDate(loanDTO.getLoanDate().plusDays(LOAN_DURATION_DAYS));
+        }
 
         Loan updatedLoan = loanRepository.save(existingLoan);
 
@@ -183,30 +200,21 @@ public class LoanServiceImplementation implements LoanService {
 
     /**
      * Elimina un préstamo del sistema.
-     *
+     * <p>
      * Solo se permite eliminar si el libro ha sido devuelto
      * (returnedDate distinto de null).
      *
      * @param id ID del préstamo.
      * @throws ResourceNotFoundException si el préstamo no existe.
-     * @throws BadRequestException si el préstamo no ha sido devuelto.
+     * @throws BadRequestException       si el préstamo no ha sido devuelto.
      */
     @Transactional
     @Override
     public void deleteLoan(Integer id) {
-
-        Loan loan = loanRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException(
-                        "No se ha encontrado ningún préstamo con el ID: " + id
-                )
-        );
-
+        Loan loan = loanRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ningún préstamo con el ID: " + id));
         if (loan.getReturnedDate() == null) {
-            throw new BadRequestException(
-                    "No se puede borrar el registro porque el libro no está devuelto"
-            );
+            throw new BadRequestException("No se puede borrar el registro porque el libro no está devuelto");
         }
-
         loanRepository.delete(loan);
     }
 }

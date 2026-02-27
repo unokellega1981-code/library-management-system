@@ -53,7 +53,6 @@ public class LoanMapper {
         Loan loan = new Loan();
         loan.setId(loanDTO.getId());
         loan.setLoanDate(loanDTO.getLoanDate());
-        loan.setDueDate(loanDTO.getDueDate());
         loan.setReturnedDate(loanDTO.getReturnedDate());
         loan.setPrice(loanDTO.getPrice());
 

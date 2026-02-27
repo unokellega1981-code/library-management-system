@@ -48,9 +48,11 @@ public class LoanDTO {
     private LocalDate loanDate;
 
     /**
-     * Fecha límite de devolución (no nula)
+     * Fecha de vencimiento del préstamo.
+     * <p>
+     * Este campo se calcula automáticamente por el sistema
+     * y no debe ser proporcionado por el cliente.
      */
-    @NotNull(message = "La fecha de vencimiento no puede estar vacía")
     private LocalDate dueDate;
 
     /**
