@@ -3,9 +3,11 @@ package com.conanthelibrarian.librarymanagementsystem.service.implementation;
 import com.conanthelibrarian.librarymanagementsystem.constants.Genre;
 import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.entity.Book;
+import com.conanthelibrarian.librarymanagementsystem.entity.Loan;
 import com.conanthelibrarian.librarymanagementsystem.exception.ResourceNotFoundException;
 import com.conanthelibrarian.librarymanagementsystem.mapper.BookMapper;
 import com.conanthelibrarian.librarymanagementsystem.repository.BookRepository;
+import com.conanthelibrarian.librarymanagementsystem.repository.LoanRepository;
 import com.conanthelibrarian.librarymanagementsystem.service.BookService;
 import org.springframework.stereotype.Service;
 
@@ -32,9 +34,11 @@ import java.util.List;
 public class BookServiceImplementation implements BookService {
 
     private final BookRepository bookRepository;
+    private final LoanRepository loanRepository;
 
-    public BookServiceImplementation(BookRepository bookRepository) {
+    public BookServiceImplementation(BookRepository bookRepository, LoanRepository loanRepository) {
         this.bookRepository = bookRepository;
+        this.loanRepository = loanRepository;
     }
 
     /**
@@ -131,8 +135,29 @@ public class BookServiceImplementation implements BookService {
     @Override
     public List<BookDTO> getBooksByGenre(Genre genre) {
 
-        return bookRepository.findByGenre(genre)
+        return bookRepository.findBookByGenre(genre)
                 .stream()
+                .map(BookMapper::toDTO)
+                .toList();
+    }
+
+    /**
+     * Obtiene todos los libros que actualmente están en préstamo.
+     *
+     * <p>
+     * Se consideran en préstamo aquellos libros que tienen
+     * al menos un registro Loan cuyo returnedDate es null.
+     * </p>
+     *
+     * @return Lista de libros en formato DTO sin duplicados.
+     */
+    @Override
+    public List<BookDTO> getBooksCurrentlyOnLoan() {
+
+        return loanRepository.findBookByReturnedDateIsNull()
+                .stream()
+                .map(Loan::getBook)
+                .distinct() // evita duplicados si hay varios préstamos del mismo libro
                 .map(BookMapper::toDTO)
                 .toList();
     }

@@ -96,4 +96,14 @@ public class BookController {
     public ResponseEntity<List<BookDTO>> getBooksByGenre(@PathVariable Genre genre) {
         return ResponseEntity.ok(bookService.getBooksByGenre(genre));
     }
+
+    /**
+     * Recupera todos los libros que actualmente están en préstamo.
+     *
+     * @return Lista de libros que tienen al menos un préstamo activo.
+     */
+    @GetMapping("/on-loan")
+    public ResponseEntity<List<BookDTO>> getBooksCurrentlyOnLoan() {
+        return ResponseEntity.ok(bookService.getBooksCurrentlyOnLoan());
+    }
 }

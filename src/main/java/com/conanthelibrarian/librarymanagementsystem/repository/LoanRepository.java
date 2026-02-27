@@ -3,6 +3,8 @@ package com.conanthelibrarian.librarymanagementsystem.repository;
 import com.conanthelibrarian.librarymanagementsystem.entity.Loan;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 /**
  * Repositorio JPA para la entidad Loan (préstamos).
  *
@@ -22,4 +24,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * </p>
  */
 public interface LoanRepository extends JpaRepository<Loan, Integer> {
+
+    /**
+     * Recupera todos los préstamos que todavía no han sido devueltos.
+     *
+     * @return lista de préstamos activos (returnedDate == null)
+     */
+    List<Loan> findBookByReturnedDateIsNull();
 }

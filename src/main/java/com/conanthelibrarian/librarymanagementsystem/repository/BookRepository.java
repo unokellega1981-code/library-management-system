@@ -37,5 +37,5 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
      * @param genre género del libro
      * @return lista de libros del género indicado
      */
-    List<Book> findByGenre(Genre genre);
+    List<Book> findBookByGenre(Genre genre);
 }
