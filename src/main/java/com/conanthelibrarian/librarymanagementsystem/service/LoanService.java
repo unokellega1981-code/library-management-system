@@ -58,4 +58,25 @@ public interface LoanService {
      * @param id identificador del préstamo
      */
     void deleteLoan(Integer id);
+
+    /**
+     * Crea un préstamo rápido a partir del ID del libro y del ID del usuario.
+     *
+     * <p>
+     * Esta operación:
+     * <ul>
+     *     <li>Verifica que el usuario exista.</li>
+     *     <li>Verifica que el libro exista.</li>
+     *     <li>Comprueba que haya copias disponibles.</li>
+     *     <li>Asigna automáticamente la fecha actual como loanDate.</li>
+     *     <li>Calcula automáticamente dueDate sumando 7 días.</li>
+     *     <li>Inicializa returnedDate como null.</li>
+     * </ul>
+     * </p>
+     *
+     * @param bookId ID del libro a prestar
+     * @param userId ID del usuario que recibe el libro
+     * @return préstamo creado en formato DTO
+     */
+    LoanDTO lendBookToUser(Integer bookId, Integer userId);
 }

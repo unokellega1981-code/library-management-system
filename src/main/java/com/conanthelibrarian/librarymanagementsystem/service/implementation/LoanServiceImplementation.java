@@ -14,7 +14,6 @@ import com.conanthelibrarian.librarymanagementsystem.service.LoanService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -97,15 +96,15 @@ public class LoanServiceImplementation implements LoanService {
 
     /**
      * Crea un nuevo préstamo.
-     *
+     * <p>
      * Reglas aplicadas:
      * - Verifica que el usuario exista.
      * - Verifica que el libro exista.
      * - Comprueba que haya copias disponibles.
      * - Reduce en una unidad las copias disponibles del libro.
      * - Calcula automáticamente la fecha de vencimiento (dueDate)
-     *   sumando LOAN_DURATION_DAYS a loanDate.
-     *
+     * sumando LOAN_DURATION_DAYS a loanDate.
+     * <p>
      * Si el cliente envía un dueDate en el DTO, será ignorado.
      */
     @Transactional
@@ -142,12 +141,12 @@ public class LoanServiceImplementation implements LoanService {
 
     /**
      * Actualiza un préstamo existente.
-     *
+     * <p>
      * Si se cambia el libro:
      * - Devuelve una copia al libro anterior.
      * - Comprueba disponibilidad del nuevo libro.
      * - Reduce en una unidad el nuevo libro.
-     *
+     * <p>
      * Además:
      * - Si se modifica loanDate, se recalcula automáticamente dueDate.
      */
@@ -216,5 +215,66 @@ public class LoanServiceImplementation implements LoanService {
             throw new BadRequestException("No se puede borrar el registro porque el libro no está devuelto");
         }
         loanRepository.delete(loan);
+    }
+
+    /**
+     * Crea un préstamo rápido utilizando únicamente el ID del libro
+     * y el ID del usuario.
+     *
+     * <p>
+     * Reglas aplicadas:
+     * <ul>
+     *     <li>Comprueba que el usuario exista.</li>
+     *     <li>Comprueba que el libro exista.</li>
+     *     <li>Verifica que haya al menos una copia disponible.</li>
+     *     <li>Reduce en una unidad las copias disponibles.</li>
+     *     <li>Establece loanDate como la fecha actual.</li>
+     *     <li>Calcula automáticamente dueDate.</li>
+     *     <li>returnedDate se inicializa como null.</li>
+     * </ul>
+     * </p>
+     *
+     * @param bookId ID del libro
+     * @param userId ID del usuario
+     * @return préstamo creado en formato DTO
+     * @throws ResourceNotFoundException si el libro o usuario no existen
+     * @throws BadRequestException       si no hay copias disponibles
+     */
+    @Transactional
+    @Override
+    public LoanDTO lendBookToUser(Integer bookId, Integer userId) {
+
+        // Verificar usuario
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("No se ha encontrado ningún usuario con el ID: " + userId));
+
+        // Verificar libro
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("No se ha encontrado ningún libro con el ID: " + bookId));
+
+        // Verificar disponibilidad
+        if (book.getAvailableCopies() == null || book.getAvailableCopies() <= 0) {
+            throw new BadRequestException("No hay copias disponibles del libro con ID: " + bookId);
+        }
+
+        // Reducir copia disponible
+        book.setAvailableCopies(book.getAvailableCopies() - 1);
+        bookRepository.save(book);
+
+        // Crear préstamo
+        Loan loan = new Loan();
+        loan.setId(null);
+        loan.setUser(user);
+        loan.setBook(book);
+        loan.setLoanDate(java.time.LocalDate.now());
+        loan.setDueDate(java.time.LocalDate.now().plusDays(LOAN_DURATION_DAYS));
+        loan.setReturnedDate(null);
+        loan.setPrice(null);
+
+        Loan savedLoan = loanRepository.save(loan);
+
+        return LoanMapper.toDTO(savedLoan);
     }
 }

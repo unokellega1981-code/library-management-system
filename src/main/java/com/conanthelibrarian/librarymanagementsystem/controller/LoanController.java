@@ -84,4 +84,21 @@ public class LoanController {
         loanService.deleteLoan(id);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * Crea un préstamo rápido utilizando únicamente el ID del libro
+     * y el ID del usuario.
+     *
+     * @param bookId ID del libro
+     * @param userId ID del usuario
+     * @return préstamo creado
+     */
+    @PostMapping("/lend")
+    public ResponseEntity<LoanDTO> lendBookToUser(
+            @RequestParam Integer bookId,
+            @RequestParam Integer userId) {
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(loanService.lendBookToUser(bookId, userId));
+    }
 }
