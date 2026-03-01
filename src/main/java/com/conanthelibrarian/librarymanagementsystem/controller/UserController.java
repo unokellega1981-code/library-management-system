@@ -84,4 +84,27 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * Recupera los usuarios que tienen más de X préstamos activos.
+     *
+     * @param x número mínimo de préstamos activos
+     * @return lista de usuarios que superan ese número
+     */
+    @GetMapping("/active-loans/more-than/{x}")
+    public ResponseEntity<List<UserDTO>> getUsersWithMoreThanXActiveLoans(@PathVariable Integer x) {
+        return ResponseEntity.ok(userService.getUsersWithMoreThanXActiveLoans(x));
+    }
+
+    /**
+     * Recupera los usuarios que han realizado más de X préstamos
+     * en total (histórico completo).
+     *
+     * @param x número mínimo de préstamos
+     * @return lista de usuarios
+     */
+    @GetMapping("/total-loans/more-than/{x}")
+    public ResponseEntity<List<UserDTO>> getUsersWithMoreThanXTotalLoans(@PathVariable Integer x) {
+        return ResponseEntity.ok(userService.getUsersWithMoreThanXTotalLoans(x));
+    }
 }

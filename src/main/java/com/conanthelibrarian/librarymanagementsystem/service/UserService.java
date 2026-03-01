@@ -53,4 +53,21 @@ public interface UserService {
      * @param id identificador del usuario
      */
     void deleteUser(Integer id);
+
+    /**
+     * Recupera los usuarios que tienen más de X préstamos activos.
+     *
+     * @param x número mínimo de préstamos activos
+     * @return lista de usuarios que superan ese número
+     */
+    List<UserDTO> getUsersWithMoreThanXActiveLoans(int x);
+
+    /**
+     * Recupera los usuarios que han realizado más de X préstamos
+     * en total.
+     *
+     * @param x número mínimo de préstamos
+     * @return lista de usuarios en formato DTO
+     */
+    List<UserDTO> getUsersWithMoreThanXTotalLoans(int x);
 }
