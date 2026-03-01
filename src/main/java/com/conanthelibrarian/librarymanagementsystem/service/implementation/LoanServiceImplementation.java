@@ -14,6 +14,8 @@ import com.conanthelibrarian.librarymanagementsystem.service.LoanService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -276,5 +278,47 @@ public class LoanServiceImplementation implements LoanService {
         Loan savedLoan = loanRepository.save(loan);
 
         return LoanMapper.toDTO(savedLoan);
+    }
+
+    /**
+     * Procesa la devolución de un préstamo.
+     *
+     * <p>
+     * Si el préstamo ya está devuelto (returnedDate != null),
+     * se lanza una excepción indicando que ya fue procesado.
+     * </p>
+     *
+     * @param loanId ID del préstamo
+     * @return préstamo actualizado en formato DTO
+     * @throws ResourceNotFoundException si el préstamo no existe
+     * @throws BadRequestException       si el préstamo ya está devuelto
+     */
+    @Override
+    @Transactional
+    public LoanDTO returnBook(Integer loanId) {
+
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("No se ha encontrado ningún préstamo con el ID: " + loanId));
+
+        if (loan.getReturnedDate() != null) {
+            throw new BadRequestException("Este préstamo ya está devuelto");
+        }
+
+        // Establecer fecha de devolución
+        loan.setReturnedDate(LocalDate.now());
+
+        // Precio fijo temporal
+        loan.setPrice(new BigDecimal("10.00"));
+
+        // Incrementar copias disponibles del libro
+        Book book = loan.getBook();
+        book.setAvailableCopies(book.getAvailableCopies() + 1);
+
+        // No hace falta save explícito si estás en @Transactional
+        // pero puedes dejarlo si quieres claridad
+        loanRepository.save(loan);
+
+        return LoanMapper.toDTO(loan);
     }
 }

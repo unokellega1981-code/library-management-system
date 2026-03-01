@@ -101,4 +101,15 @@ public class LoanController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(loanService.lendBookToUser(bookId, userId));
     }
+
+    /**
+     * Procesa la devolución de un préstamo.
+     *
+     * @param id ID del préstamo
+     * @return préstamo actualizado
+     */
+    @PostMapping("/{id}/return")
+    public ResponseEntity<LoanDTO> returnBook(@PathVariable Integer id) {
+        return ResponseEntity.ok(loanService.returnBook(id));
+    }
 }

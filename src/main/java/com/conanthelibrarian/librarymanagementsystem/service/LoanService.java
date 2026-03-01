@@ -79,4 +79,23 @@ public interface LoanService {
      * @return préstamo creado en formato DTO
      */
     LoanDTO lendBookToUser(Integer bookId, Integer userId);
+
+    /**
+     * Procesa la devolución de un préstamo.
+     *
+     * <p>
+     * Esta operación:
+     * <ul>
+     *     <li>Verifica que el préstamo exista.</li>
+     *     <li>Comprueba que no haya sido devuelto previamente.</li>
+     *     <li>Asigna la fecha actual como returnedDate.</li>
+     *     <li>Establece un precio fijo de 10€ (temporal).</li>
+     *     <li>Incrementa en 1 las copias disponibles del libro asociado.</li>
+     * </ul>
+     * </p>
+     *
+     * @param loanId ID del préstamo a devolver
+     * @return préstamo actualizado en formato DTO
+     */
+    LoanDTO returnBook(Integer loanId);
 }
