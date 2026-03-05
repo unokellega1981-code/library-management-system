@@ -84,14 +84,27 @@ public interface LoanService {
      * Procesa la devolución de un préstamo.
      *
      * <p>
-     * Esta operación:
+     * Esta operación realiza las siguientes acciones:
      * <ul>
      *     <li>Verifica que el préstamo exista.</li>
      *     <li>Comprueba que no haya sido devuelto previamente.</li>
      *     <li>Asigna la fecha actual como returnedDate.</li>
-     *     <li>Establece un precio fijo de 10€ (temporal).</li>
-     *     <li>Incrementa en 1 las copias disponibles del libro asociado.</li>
+     *     <li>Calcula automáticamente el precio según la política de devolución:</li>
      * </ul>
+     *
+     * <ul>
+     *     <li>Si se devuelve antes del dueDate → 10€ menos 1€ por cada día de adelanto.</li>
+     *     <li>Si se devuelve el mismo día del dueDate → 10€.</li>
+     *     <li>Si se devuelve después del dueDate → 10€ más 2€ por cada día de retraso.</li>
+     * </ul>
+     *
+     * <p>
+     * Dado que el préstamo tiene una duración fija de 7 días,
+     * el precio mínimo posible será 3€ (devolución el mismo día del préstamo).
+     * </p>
+     *
+     * <p>
+     * Finalmente, incrementa en 1 las copias disponibles del libro asociado.
      * </p>
      *
      * @param loanId ID del préstamo a devolver

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
@@ -281,11 +282,21 @@ public class LoanServiceImplementation implements LoanService {
     }
 
     /**
-     * Procesa la devolución de un préstamo.
+     * Procesa la devolución de un préstamo aplicando la política
+     * de cálculo de tarifas en función del retraso o adelanto.
      *
      * <p>
-     * Si el préstamo ya está devuelto (returnedDate != null),
-     * se lanza una excepción indicando que ya fue procesado.
+     * Política de precios:
+     * <ul>
+     *     <li>Base: 10€.</li>
+     *     <li>Devolución anticipada → se resta 1€ por cada día de adelanto.</li>
+     *     <li>Devolución puntual → precio base (10€).</li>
+     *     <li>Devolución tardía → se suman 2€ por cada día de retraso.</li>
+     * </ul>
+     * </p>
+     *
+     * <p>
+     * El cálculo se realiza utilizando la diferencia entre dueDate y la fecha actual.
      * </p>
      *
      * @param loanId ID del préstamo
@@ -297,26 +308,52 @@ public class LoanServiceImplementation implements LoanService {
     @Transactional
     public LoanDTO returnBook(Integer loanId) {
 
-        Loan loan = loanRepository.findById(loanId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("No se ha encontrado ningún préstamo con el ID: " + loanId));
+        Loan loan = loanRepository.findById(loanId).orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ningún préstamo con el ID: " + loanId));
 
         if (loan.getReturnedDate() != null) {
             throw new BadRequestException("Este préstamo ya está devuelto");
         }
 
-        // Establecer fecha de devolución
-        loan.setReturnedDate(LocalDate.now());
+        LocalDate today = LocalDate.now();
+        LocalDate dueDate = loan.getDueDate();
 
-        // Precio fijo temporal
-        loan.setPrice(new BigDecimal("10.00"));
+        loan.setReturnedDate(today);
+
+        long difference = ChronoUnit.DAYS.between(dueDate, today);
+
+        BigDecimal basePrice = BigDecimal.valueOf(10);
+        BigDecimal finalPrice;
+
+        /**
+         * difference:
+         *  < 0  → devolución anticipada
+         *  = 0  → devolución puntual
+         *  > 0  → devolución con retraso
+         */
+        switch ((int) Math.signum(difference)) {
+
+            case -1 -> {
+                long daysEarly = Math.abs(difference);
+                finalPrice = basePrice.subtract(BigDecimal.valueOf(daysEarly));
+            }
+
+            case 0 -> finalPrice = basePrice;
+
+            case 1 -> {
+                long daysLate = difference;
+                BigDecimal penalty = BigDecimal.valueOf(daysLate * 2L);
+                finalPrice = basePrice.add(penalty);
+            }
+
+            default -> throw new IllegalStateException("Estado inesperado en el cálculo del precio");
+        }
+
+        loan.setPrice(finalPrice);
 
         // Incrementar copias disponibles del libro
         Book book = loan.getBook();
         book.setAvailableCopies(book.getAvailableCopies() + 1);
 
-        // No hace falta save explícito si estás en @Transactional
-        // pero puedes dejarlo si quieres claridad
         loanRepository.save(loan);
 
         return LoanMapper.toDTO(loan);
