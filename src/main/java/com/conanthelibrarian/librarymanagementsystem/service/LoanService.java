@@ -1,5 +1,6 @@
 package com.conanthelibrarian.librarymanagementsystem.service;
 
+import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.dto.LoanDTO;
 
 import java.util.List;
@@ -111,4 +112,17 @@ public interface LoanService {
      * @return préstamo actualizado en formato DTO
      */
     LoanDTO returnBook(Integer loanId);
+
+    /**
+     * Obtiene todos los libros que han sido prestados a un usuario.
+     *
+     * <p>
+     * El resultado incluye libros correspondientes a préstamos
+     * activos y préstamos ya finalizados.
+     * </p>
+     *
+     * @param userId ID del usuario
+     * @return lista de libros prestados en formato DTO
+     */
+    List<BookDTO> getBorrowedBooksByUser(Integer userId);
 }

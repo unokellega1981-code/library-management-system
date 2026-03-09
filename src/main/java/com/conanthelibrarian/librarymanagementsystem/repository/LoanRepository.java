@@ -75,4 +75,17 @@ public interface LoanRepository extends JpaRepository<Loan, Integer> {
             HAVING COUNT(l) >= :x
             """)
     List<User> findUsersWithMoreThanXTotalLoans(@Param("x") int x);
+
+    /**
+     * Obtiene todos los préstamos asociados a un usuario.
+     *
+     * <p>
+     * Incluye tanto los préstamos activos como aquellos
+     * que ya han sido devueltos.
+     * </p>
+     *
+     * @param userId ID del usuario
+     * @return lista de préstamos del usuario
+     */
+    List<Loan> findByUserId(Integer userId);
 }

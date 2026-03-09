@@ -1,5 +1,6 @@
 package com.conanthelibrarian.librarymanagementsystem.controller;
 
+import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.dto.LoanDTO;
 import com.conanthelibrarian.librarymanagementsystem.service.LoanService;
 import jakarta.validation.Valid;
@@ -111,5 +112,24 @@ public class LoanController {
     @PostMapping("/{id}/return")
     public ResponseEntity<LoanDTO> returnBook(@PathVariable Integer id) {
         return ResponseEntity.ok(loanService.returnBook(id));
+    }
+
+    /**
+     * Obtiene todos los libros que han sido prestados a un usuario.
+     *
+     * <p>
+     * Incluye libros correspondientes a préstamos activos
+     * y préstamos ya finalizados.
+     * </p>
+     *
+     * @param userId ID del usuario
+     * @return lista de libros prestados
+     */
+    @GetMapping("/user/{userId}/books")
+    public ResponseEntity<List<BookDTO>> getBorrowedBooksByUser(@PathVariable Integer userId) {
+
+        List<BookDTO> books = loanService.getBorrowedBooksByUser(userId);
+
+        return ResponseEntity.ok(books);
     }
 }

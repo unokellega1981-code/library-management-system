@@ -1,11 +1,13 @@
 package com.conanthelibrarian.librarymanagementsystem.service.implementation;
 
+import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.dto.LoanDTO;
 import com.conanthelibrarian.librarymanagementsystem.entity.Book;
 import com.conanthelibrarian.librarymanagementsystem.entity.Loan;
 import com.conanthelibrarian.librarymanagementsystem.entity.User;
 import com.conanthelibrarian.librarymanagementsystem.exception.ResourceNotFoundException;
 import com.conanthelibrarian.librarymanagementsystem.exception.BadRequestException;
+import com.conanthelibrarian.librarymanagementsystem.mapper.BookMapper;
 import com.conanthelibrarian.librarymanagementsystem.mapper.LoanMapper;
 import com.conanthelibrarian.librarymanagementsystem.repository.BookRepository;
 import com.conanthelibrarian.librarymanagementsystem.repository.LoanRepository;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -357,5 +360,47 @@ public class LoanServiceImplementation implements LoanService {
         loanRepository.save(loan);
 
         return LoanMapper.toDTO(loan);
+    }
+
+    /**
+     * Recupera todos los libros que han sido prestados a un usuario.
+     *
+     * <p>
+     * El método obtiene todos los préstamos asociados al usuario y,
+     * mediante un bucle, extrae el libro correspondiente a cada préstamo.
+     * Posteriormente cada libro se convierte a {@link BookDTO}.
+     * </p>
+     *
+     * <p>
+     * Se incluyen tanto los libros de préstamos activos como
+     * los que ya han sido devueltos.
+     * </p>
+     *
+     * @param userId ID del usuario
+     * @return lista de libros prestados al usuario
+     * @throws ResourceNotFoundException si el usuario no existe
+     */
+    @Override
+    public List<BookDTO> getBorrowedBooksByUser(Integer userId) {
+
+        if (!userRepository.existsById(userId)) {
+            throw new ResourceNotFoundException(
+                    "No se ha encontrado ningún usuario con el ID: " + userId);
+        }
+
+        List<Loan> loans = loanRepository.findByUserId(userId);
+
+        List<BookDTO> books = new ArrayList<>();
+
+        for (Loan loan : loans) {
+
+            Book book = loan.getBook();
+
+            BookDTO bookDTO = BookMapper.toDTO(book);
+
+            books.add(bookDTO);
+        }
+
+        return books;
     }
 }
