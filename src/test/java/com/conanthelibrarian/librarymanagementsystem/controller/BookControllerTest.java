@@ -65,8 +65,8 @@ class BookControllerTest {
      */
     @BeforeEach
     void setUp() {
-        book1 = new BookDTO(1, "Libro A", "Autor A", Genre.FICTION, 5, 5);
-        book2 = new BookDTO(2, "Libro B", "Autor B", Genre.SCIENCE, 3, 3);
+        book1 = new BookDTO(1, "Libro A", "Autor A", "547467", Genre.FANTASY, 4);
+        book2 = new BookDTO(2, "Libro B", "Autor B", "35747", Genre.SCIENCE_FICTION, 6);
     }
 
     /**
@@ -147,7 +147,7 @@ class BookControllerTest {
     @Test
     void getBooksByGenre_shouldReturnList() throws Exception {
 
-        Mockito.when(bookService.getBooksByGenre(Genre.FICTION)).thenReturn(List.of(book1));
+        Mockito.when(bookService.getBooksByGenre(Genre.SCIENCE_FICTION)).thenReturn(List.of(book1));
 
         mockMvc.perform(get("/api/books/genre/FICTION"))
                 .andExpect(status().isOk());

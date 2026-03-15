@@ -1,5 +1,6 @@
 package com.conanthelibrarian.librarymanagementsystem.controller;
 
+import com.conanthelibrarian.librarymanagementsystem.constants.Role;
 import com.conanthelibrarian.librarymanagementsystem.dto.UserDTO;
 import com.conanthelibrarian.librarymanagementsystem.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,7 +51,8 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        user = new UserDTO(1, "Juan", "juan@email.com");
+
+        user = new UserDTO(1, "Juan", "juan@email.com", "3557", Role.MEMBER);
     }
 
     /**
