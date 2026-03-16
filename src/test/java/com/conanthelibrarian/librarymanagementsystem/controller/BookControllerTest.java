@@ -149,7 +149,7 @@ class BookControllerTest {
 
         Mockito.when(bookService.getBooksByGenre(Genre.SCIENCE_FICTION)).thenReturn(List.of(book1));
 
-        mockMvc.perform(get("/api/books/genre/FICTION"))
+        mockMvc.perform(get("/api/books/genre/SCIENCE_FICTION"))
                 .andExpect(status().isOk());
     }
 
