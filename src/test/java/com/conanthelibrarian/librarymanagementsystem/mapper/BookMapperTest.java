@@ -9,10 +9,17 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Tests unitarios para BookMapper.
+ * Tests unitarios para {@link BookMapper}.
+ *
  * <p>
- * Comprueba que la conversión entre Book y BookDTO
- * se realiza correctamente.
+ * Verifica que la conversión entre {@link Book} y {@link BookDTO}
+ * se realiza correctamente en ambos sentidos.
+ * </p>
+ *
+ * <p>
+ * También comprueba el comportamiento cuando los valores
+ * de entrada son {@code null}.
+ * </p>
  */
 class BookMapperTest {
 
@@ -63,4 +70,29 @@ class BookMapperTest {
         assertEquals(dto.getGenre(), book.getGenre());
         assertEquals(dto.getAvailableCopies(), book.getAvailableCopies());
     }
+
+    /**
+     * Comprueba que si la entidad es null
+     * el mapper devuelve null.
+     */
+    @Test
+    void shouldReturnNullWhenEntityIsNull() {
+
+        BookDTO dto = BookMapper.toDTO(null);
+
+        assertNull(dto);
+    }
+
+    /**
+     * Comprueba que si el DTO es null
+     * el mapper devuelve null.
+     */
+    @Test
+    void shouldReturnNullWhenDTOIsNull() {
+
+        Book book = BookMapper.toEntity(null);
+
+        assertNull(book);
+    }
+
 }

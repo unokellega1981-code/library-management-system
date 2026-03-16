@@ -58,4 +58,26 @@ class UserMapperTest {
         assertEquals(dto.getPassword(), user.getPassword());
         assertEquals(dto.getRole(), user.getRole());
     }
+
+    /**
+     * Comprueba que devuelve null si la entidad es null.
+     */
+    @Test
+    void shouldReturnNullWhenEntityIsNull() {
+
+        UserDTO dto = UserMapper.toDTO(null);
+
+        assertNull(dto);
+    }
+
+    /**
+     * Comprueba que devuelve null si el DTO es null.
+     */
+    @Test
+    void shouldReturnNullWhenDTOIsNull() {
+
+        User user = UserMapper.toEntity(null);
+
+        assertNull(user);
+    }
 }

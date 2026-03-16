@@ -64,4 +64,26 @@ class LoanMapperTest {
         assertEquals(dto.getId(), loan.getId());
         assertEquals(dto.getLoanDate(), loan.getLoanDate());
     }
+
+    /**
+     * Comprueba que devuelve null si la entidad es null.
+     */
+    @Test
+    void shouldReturnNullWhenEntityIsNull() {
+
+        LoanDTO dto = LoanMapper.toDTO(null);
+
+        assertNull(dto);
+    }
+
+    /**
+     * Comprueba que devuelve null si el DTO es null.
+     */
+    @Test
+    void shouldReturnNullWhenDTOIsNull() {
+
+        Loan loan = LoanMapper.toEntity(null);
+
+        assertNull(loan);
+    }
 }
