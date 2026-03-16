@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -54,6 +55,8 @@ class LoanControllerTest {
         loan.setId(1);
         loan.setUserId(1);
         loan.setBookId(2);
+        loan.setLoanDate(LocalDate.now());
+        loan.setDueDate(LocalDate.now().plusDays(7));
     }
 
     /**
