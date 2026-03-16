@@ -165,4 +165,25 @@ public class UserServiceImplementation implements UserService {
                 .map(UserMapper::toDTO)
                 .toList();
     }
+
+    /**
+     * Recupera un usuario por su nombre.
+     *
+     * <p>
+     * Si el usuario no existe se lanza una excepción
+     * {@link ResourceNotFoundException}.
+     * </p>
+     *
+     * @param name nombre del usuario
+     * @return usuario encontrado
+     */
+    @Override
+    public UserDTO getUserByName(String name) {
+
+        User user = userRepository.findByName(name)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found with name: " + name));
+
+        return UserMapper.toDTO(user);
+    }
 }

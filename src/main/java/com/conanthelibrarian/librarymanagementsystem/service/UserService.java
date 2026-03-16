@@ -70,4 +70,13 @@ public interface UserService {
      * @return lista de usuarios en formato DTO
      */
     List<UserDTO> getUsersWithMoreThanXTotalLoans(int x);
+
+    /**
+     * Recupera un usuario a partir de su nombre.
+     *
+     * @param name nombre del usuario
+     * @return usuario encontrado
+     * @throws ResourceNotFoundException si el usuario no existe
+     */
+    UserDTO getUserByName(String name);
 }

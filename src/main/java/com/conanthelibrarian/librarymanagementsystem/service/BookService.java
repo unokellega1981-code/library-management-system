@@ -78,4 +78,12 @@ public interface BookService {
      * @return lista de libros que tienen al menos un préstamo activo
      */
     List<BookDTO> getBooksCurrentlyOnLoan();
+
+    /**
+     * Recupera todos los libros de un autor específico.
+     *
+     * @param author nombre del autor
+     * @return lista de libros del autor
+     */
+    List<BookDTO> getBooksByAuthor(String author);
 }

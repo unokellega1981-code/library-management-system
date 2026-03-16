@@ -106,4 +106,16 @@ public class BookController {
     public ResponseEntity<List<BookDTO>> getBooksCurrentlyOnLoan() {
         return ResponseEntity.ok(bookService.getBooksCurrentlyOnLoan());
     }
+
+    /**
+     * Recupera todos los libros escritos por un autor específico.
+     *
+     * @param author nombre del autor
+     * @return lista de libros del autor
+     */
+    @GetMapping("/author/{author}")
+    public List<BookDTO> getBooksByAuthor(@PathVariable String author) {
+
+        return bookService.getBooksByAuthor(author);
+    }
 }

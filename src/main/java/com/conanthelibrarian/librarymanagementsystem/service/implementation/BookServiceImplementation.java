@@ -161,4 +161,24 @@ public class BookServiceImplementation implements BookService {
                 .map(BookMapper::toDTO)
                 .toList();
     }
+
+    /**
+     * Recupera todos los libros escritos por un autor específico.
+     *
+     * <p>
+     * Obtiene los libros desde el repositorio y los convierte
+     * a DTO antes de devolverlos.
+     * </p>
+     *
+     * @param author nombre del autor
+     * @return lista de libros del autor
+     */
+    @Override
+    public List<BookDTO> getBooksByAuthor(String author) {
+
+        return bookRepository.findByAuthor(author)
+                .stream()
+                .map(BookMapper::toDTO)
+                .toList();
+    }
 }

@@ -229,4 +229,23 @@ class BookServiceImplementationTest {
         assertEquals(1, result.size());
         verify(loanRepository).findBookByReturnedDateIsNull();
     }
+
+    /**
+     * Comprueba que se devuelven correctamente los libros
+     * escritos por un autor específico.
+     */
+    @Test
+    void shouldReturnBooksByAuthor() {
+
+        Book book = new Book();
+        book.setAuthor("George Orwell");
+
+        when(bookRepository.findByAuthor("George Orwell"))
+                .thenReturn(List.of(book));
+
+        List<BookDTO> result = bookService.getBooksByAuthor("George Orwell");
+
+        assertEquals(1, result.size());
+        verify(bookRepository).findByAuthor("George Orwell");
+    }
 }

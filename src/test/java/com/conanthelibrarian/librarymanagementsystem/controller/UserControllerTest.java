@@ -119,4 +119,17 @@ class UserControllerTest {
                 .andExpect(status().isNoContent());
     }
 
+    /**
+     * Comprueba que el endpoint GET /api/users/name/{name}
+     * devuelve un usuario a partir de su nombre.
+     */
+    @Test
+    void getUserByName_shouldReturnUser() throws Exception {
+
+        Mockito.when(userService.getUserByName("Juan"))
+                .thenReturn(user);
+
+        mockMvc.perform(get("/api/users/name/Juan"))
+                .andExpect(status().isOk());
+    }
 }

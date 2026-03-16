@@ -220,4 +220,23 @@ class UserServiceImplementationTest {
         assertEquals(1, result.size());
         verify(loanRepository).findUsersWithMoreThanXTotalLoans(3);
     }
+
+    /**
+     * Comprueba que se obtiene correctamente un usuario
+     * a partir de su nombre.
+     */
+    @Test
+    void shouldReturnUserByName() {
+
+        User user = new User();
+        user.setName("Juan");
+
+        when(userRepository.findByName("Juan"))
+                .thenReturn(Optional.of(user));
+
+        UserDTO result = userService.getUserByName("Juan");
+
+        assertNotNull(result);
+        verify(userRepository).findByName("Juan");
+    }
 }

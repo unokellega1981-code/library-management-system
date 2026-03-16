@@ -107,4 +107,16 @@ public class UserController {
     public ResponseEntity<List<UserDTO>> getUsersWithMoreThanXTotalLoans(@PathVariable Integer x) {
         return ResponseEntity.ok(userService.getUsersWithMoreThanXTotalLoans(x));
     }
+
+    /**
+     * Recupera un usuario a partir de su nombre.
+     *
+     * @param name nombre del usuario
+     * @return usuario encontrado
+     */
+    @GetMapping("/name/{name}")
+    public UserDTO getUserByName(@PathVariable String name) {
+
+        return userService.getUserByName(name);
+    }
 }

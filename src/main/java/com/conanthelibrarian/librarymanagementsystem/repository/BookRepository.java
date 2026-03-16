@@ -38,4 +38,17 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
      * @return lista de libros del género indicado
      */
     List<Book> findBookByGenre(Genre genre);
+
+    /**
+     * Recupera todos los libros escritos por un autor específico.
+     *
+     * <p>
+     * Spring Data JPA genera automáticamente la consulta
+     * a partir del nombre del método.
+     * </p>
+     *
+     * @param author nombre del autor a buscar
+     * @return lista de libros escritos por ese autor
+     */
+    List<Book> findByAuthor(String author);
 }

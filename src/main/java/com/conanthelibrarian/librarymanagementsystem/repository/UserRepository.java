@@ -3,6 +3,8 @@ package com.conanthelibrarian.librarymanagementsystem.repository;
 import com.conanthelibrarian.librarymanagementsystem.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 /**
  * Repositorio JPA para la entidad User.
  *
@@ -22,4 +24,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * </p>
  */
 public interface UserRepository extends JpaRepository<User, Integer> {
+
+    /**
+     * Busca un usuario por su nombre.
+     *
+     * <p>
+     * Devuelve un Optional para manejar correctamente
+     * el caso en el que el usuario no exista.
+     * </p>
+     *
+     * @param name nombre del usuario
+     * @return usuario encontrado
+     */
+    Optional<User> findByName(String name);
 }

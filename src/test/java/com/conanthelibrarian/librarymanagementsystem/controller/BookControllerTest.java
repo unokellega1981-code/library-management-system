@@ -166,4 +166,18 @@ class BookControllerTest {
                 .andExpect(status().isOk());
     }
 
+    /**
+     * Comprueba que el endpoint GET /api/books/author/{author}
+     * devuelve los libros escritos por un autor específico.
+     */
+    @Test
+    void getBooksByAuthor_shouldReturnList() throws Exception {
+
+        Mockito.when(bookService.getBooksByAuthor("George Orwell"))
+                .thenReturn(List.of(book1));
+
+        mockMvc.perform(get("/api/books/author/George Orwell"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+    }
 }
