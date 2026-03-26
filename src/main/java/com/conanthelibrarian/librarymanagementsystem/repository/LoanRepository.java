@@ -12,10 +12,6 @@ public interface LoanRepository extends JpaRepository<Loan, Integer> {
 
     List<Loan> findBookByReturnedDateIsNull();
 
-    // Esta búsqueda la hago porque la pides pero como he generado la base de datos con la orden de que solo puedes tener
-    // un préstamo pendiente a la vez, lo máximo será 1.
-
-
     @Query("""
             SELECT l.user
             FROM Loan l
@@ -25,7 +21,7 @@ public interface LoanRepository extends JpaRepository<Loan, Integer> {
             """)
     List<User> findUsersWithMoreThanXActiveLoans(@Param("x") int x);
 
-    // Esta búsqueda no la pides pero la hago porque me parece más natural ya que mira cuantos clientes tienen más de X
+    // Esta búsqueda no la pides pero la hago porque me parece más natural, ya que mira cuantos clientes tienen más de X
     // préstamos en general, tanto devueltos como activos.
 
     @Query("""
