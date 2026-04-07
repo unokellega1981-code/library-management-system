@@ -4,18 +4,13 @@ import com.conanthelibrarian.librarymanagementsystem.dto.LoanDTO;
 import com.conanthelibrarian.librarymanagementsystem.entity.Book;
 import com.conanthelibrarian.librarymanagementsystem.entity.Loan;
 import com.conanthelibrarian.librarymanagementsystem.entity.User;
+import com.conanthelibrarian.librarymanagementsystem.exception.BadRequestException;
 
 public class LoanMapper {
 
-    /**
-     * Constructor privado para evitar instanciación
-     */
     private LoanMapper() {
     }
 
-    /**
-     * Convierte Loan → LoanDTO
-     */
     public static LoanDTO toDTO(Loan loan) {
         if (loan == null) {
             return null;
@@ -42,12 +37,26 @@ public class LoanMapper {
         );
     }
 
-    /**
-     * Convierte LoanDTO → Loan
-     */
     public static Loan toEntity(LoanDTO loanDTO) {
+
         if (loanDTO == null) {
-            return null;
+            throw new BadRequestException("El cuerpo de la petición no puede ser null");
+        }
+
+        if (loanDTO.getUserId() == null) {
+            throw new BadRequestException("El campo 'userId' es obligatorio");
+        }
+
+        if (loanDTO.getBookId() == null) {
+            throw new BadRequestException("El campo 'bookId' es obligatorio");
+        }
+
+        if (loanDTO.getLoanDate() == null) {
+            throw new BadRequestException("El campo 'loanDate' es obligatorio");
+        }
+
+        if (loanDTO.getDueDate() == null) {
+            throw new BadRequestException("El campo 'dueDate' es obligatorio");
         }
 
         Loan loan = new Loan();

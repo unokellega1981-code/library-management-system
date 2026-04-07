@@ -2,26 +2,13 @@ package com.conanthelibrarian.librarymanagementsystem.mapper;
 
 import com.conanthelibrarian.librarymanagementsystem.dto.UserDTO;
 import com.conanthelibrarian.librarymanagementsystem.entity.User;
+import com.conanthelibrarian.librarymanagementsystem.exception.BadRequestException;
 
-/**
- * Mapper para la entidad User.
- *
- * <p>
- * Convierte entre User y UserDTO y viceversa, manteniendo la separación
- * entre la capa de persistencia y la capa de presentación.
- * </p>
- */
 public class UserMapper {
 
-    /**
-     * Constructor privado para evitar instanciación
-     */
     private UserMapper() {
     }
 
-    /**
-     * Convierte User → UserDTO
-     */
     public static UserDTO toDTO(User user) {
         if (user == null) return null;
 
@@ -34,11 +21,26 @@ public class UserMapper {
         );
     }
 
-    /**
-     * Convierte UserDTO → User
-     */
     public static User toEntity(UserDTO userDTO) {
-        if (userDTO == null) return null;
+        if (userDTO == null) {
+            throw new BadRequestException("El cuerpo de la petición no puede ser null");
+        }
+
+        if (userDTO.getName() == null || userDTO.getName().isBlank()) {
+            throw new BadRequestException("El campo 'name' es obligatorio");
+        }
+
+        if (userDTO.getEmail() == null || userDTO.getEmail().isBlank()) {
+            throw new BadRequestException("El campo 'email' es obligatorio");
+        }
+
+        if (userDTO.getPassword() == null || userDTO.getPassword().isBlank()) {
+            throw new BadRequestException("El campo 'password' es obligatorio");
+        }
+
+        if (userDTO.getRole() == null) {
+            throw new BadRequestException("El campo 'role' es obligatorio");
+        }
 
         return new User(
                 userDTO.getId(),

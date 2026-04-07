@@ -2,29 +2,15 @@ package com.conanthelibrarian.librarymanagementsystem.mapper;
 
 import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.entity.Book;
+import com.conanthelibrarian.librarymanagementsystem.exception.BadRequestException;
 
-/**
- * Mapper para la entidad Book.
- *
- * <p>
- * Permite convertir entre la entidad Book y su DTO (BookDTO) y viceversa.
- * Esto facilita separar la capa de persistencia de la capa de presentación.
- * </p>
- */
 public class BookMapper {
 
-    /**
-     * Constructor privado para evitar instanciación
-     */
     private BookMapper() {
     }
 
-    /**
-     * Convierte Book → BookDTO
-     */
     public static BookDTO toDTO(Book book) {
         if (book == null) return null;
-
         return new BookDTO(
                 book.getId(),
                 book.getTitle(),
@@ -35,11 +21,31 @@ public class BookMapper {
         );
     }
 
-    /**
-     * Convierte BookDTO → Book
-     */
     public static Book toEntity(BookDTO bookDTO) {
-        if (bookDTO == null) return null;
+
+        if (bookDTO == null) {
+            throw new BadRequestException("El cuerpo de la petición no puede ser null");
+        }
+
+        if (bookDTO.getTitle() == null || bookDTO.getTitle().isBlank()) {
+            throw new BadRequestException("El campo 'title' es obligatorio");
+        }
+
+        if (bookDTO.getAuthor() == null || bookDTO.getAuthor().isBlank()) {
+            throw new BadRequestException("El campo 'author' es obligatorio");
+        }
+
+        if (bookDTO.getIsbn() == null || bookDTO.getIsbn().isBlank()) {
+            throw new BadRequestException("El campo 'isbn' es obligatorio");
+        }
+
+        if (bookDTO.getGenre() == null) {
+            throw new BadRequestException("El campo 'genre' es obligatorio");
+        }
+
+        if (bookDTO.getAvailableCopies() == null || bookDTO.getAvailableCopies() < 0) {
+            throw new BadRequestException("El campo 'availableCopies' es obligatorio y debe ser mayor a 0");
+        }
 
         return new Book(
                 bookDTO.getId(),
