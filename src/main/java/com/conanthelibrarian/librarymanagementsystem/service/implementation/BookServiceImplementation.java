@@ -9,27 +9,12 @@ import com.conanthelibrarian.librarymanagementsystem.mapper.BookMapper;
 import com.conanthelibrarian.librarymanagementsystem.repository.BookRepository;
 import com.conanthelibrarian.librarymanagementsystem.repository.LoanRepository;
 import com.conanthelibrarian.librarymanagementsystem.service.BookService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Implementación del servicio de gestión de libros.
- * <p>
- * Esta clase contiene la lógica de negocio relacionada con la entidad Book.
- * Se encarga de interactuar con el repositorio, aplicar validaciones
- * y transformar entidades a DTOs y viceversa mediante el BookMapper.
- * <p>
- * Responsabilidades:
- * - Obtener todos los libros
- * - Obtener libro por ID
- * - Crear libros
- * - Actualizar libros existentes
- * - Eliminar libros
- * <p>
- * Lanza:
- * - ResourceNotFoundException cuando no existe el recurso solicitado
- */
+@Slf4j
 @Service
 public class BookServiceImplementation implements BookService {
 
@@ -41,64 +26,49 @@ public class BookServiceImplementation implements BookService {
         this.loanRepository = loanRepository;
     }
 
-    /**
-     * Obtiene todos los libros registrados en el sistema.
-     *
-     * @return Lista de libros en formato DTO.
-     */
     @Override
     public List<BookDTO> getAllBooks() {
+        log.info("Recuperando todos los libros");
         return bookRepository.findAll()
                 .stream()
                 .map(BookMapper::toDTO)
                 .toList();
     }
 
-    /**
-     * Obtiene un libro por su identificador.
-     *
-     * @param id ID del libro a buscar.
-     * @return Libro encontrado en formato DTO.
-     * @throws ResourceNotFoundException si no existe ningún libro con el ID indicado.
-     */
     @Override
     public BookDTO getBookById(Integer id) {
-        Book book = bookRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("No se ha encontrado ningún libro con el ID: " + id));
+        log.info("Buscando libro con ID {}", id);
+
+        Book book = bookRepository.findById(id).orElseThrow(() -> {
+            log.warn("Libro no encontrado con ID {}", id);
+            return new ResourceNotFoundException("No se ha encontrado ningún libro con el ID: " + id);
+        });
 
         return BookMapper.toDTO(book);
     }
 
-    /**
-     * Crea un nuevo libro en el sistema.
-     * El ID se establece automáticamente ignorando cualquier valor recibido.
-     *
-     * @param bookDTO Datos del libro a crear.
-     * @return Libro creado en formato DTO.
-     */
     @Override
     public BookDTO createBook(BookDTO bookDTO) {
-        Book book = BookMapper.toEntity(bookDTO);
+        log.info("Creando libro: {}", bookDTO);
 
+        Book book = BookMapper.toEntity(bookDTO);
         book.setId(null);
 
         Book savedBook = bookRepository.save(book);
+
+        log.info("Libro creado con ID {}", savedBook.getId());
+
         return BookMapper.toDTO(savedBook);
     }
 
-    /**
-     * Actualiza los datos de un libro existente.
-     *
-     * @param id      ID del libro a actualizar.
-     * @param bookDTO Datos actualizados.
-     * @return Libro actualizado en formato DTO.
-     * @throws ResourceNotFoundException si el libro no existe.
-     */
     @Override
     public BookDTO updateBook(Integer id, BookDTO bookDTO) {
+        log.info("Actualizando libro con ID {}", id);
 
-        Book existingBook = bookRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("No se ha encontrado ningún libro con el ID: " + id));
+        Book existingBook = bookRepository.findById(id).orElseThrow(() -> {
+            log.warn("Intento de actualizar libro inexistente con ID {}", id);
+            return new ResourceNotFoundException("No se ha encontrado ningún libro con el ID: " + id);
+        });
 
         existingBook.setTitle(bookDTO.getTitle());
         existingBook.setAuthor(bookDTO.getAuthor());
@@ -108,32 +78,28 @@ public class BookServiceImplementation implements BookService {
 
         Book updatedBook = bookRepository.save(existingBook);
 
+        log.info("Libro actualizado correctamente con ID {}", id);
+
         return BookMapper.toDTO(updatedBook);
     }
 
-    /**
-     * Elimina un libro del sistema.
-     *
-     * @param id ID del libro a eliminar.
-     * @throws ResourceNotFoundException si el libro no existe.
-     */
     @Override
     public void deleteBook(Integer id) {
+        log.warn("Eliminando libro con ID {}", id);
 
-        Book existingBook = bookRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("No se ha encontrado ningún libro con el ID: " + id));
+        Book existingBook = bookRepository.findById(id).orElseThrow(() -> {
+            log.warn("Intento de borrar libro inexistente con ID {}", id);
+            return new ResourceNotFoundException("No se ha encontrado ningún libro con el ID: " + id);
+        });
 
         bookRepository.delete(existingBook);
+
+        log.info("Libro eliminado con ID {}", id);
     }
 
-    /**
-     * Obtiene todos los libros que pertenecen a un género específico.
-     *
-     * @param genre género a filtrar.
-     * @return Lista de libros en formato DTO.
-     */
     @Override
     public List<BookDTO> getBooksByGenre(Genre genre) {
+        log.info("Buscando libros por género {}", genre);
 
         return bookRepository.findBookByGenre(genre)
                 .stream()
@@ -141,40 +107,21 @@ public class BookServiceImplementation implements BookService {
                 .toList();
     }
 
-    /**
-     * Obtiene todos los libros que actualmente están en préstamo.
-     *
-     * <p>
-     * Se consideran en préstamo aquellos libros que tienen
-     * al menos un registro Loan cuyo returnedDate es null.
-     * </p>
-     *
-     * @return Lista de libros en formato DTO sin duplicados.
-     */
     @Override
     public List<BookDTO> getBooksCurrentlyOnLoan() {
+        log.info("Recuperando libros actualmente prestados");
 
         return loanRepository.findBookByReturnedDateIsNull()
                 .stream()
                 .map(Loan::getBook)
-                .distinct() // evita duplicados si hay varios préstamos del mismo libro
+                .distinct()
                 .map(BookMapper::toDTO)
                 .toList();
     }
 
-    /**
-     * Recupera todos los libros escritos por un autor específico.
-     *
-     * <p>
-     * Obtiene los libros desde el repositorio y los convierte
-     * a DTO antes de devolverlos.
-     * </p>
-     *
-     * @param author nombre del autor
-     * @return lista de libros del autor
-     */
     @Override
     public List<BookDTO> getBooksByAuthor(String author) {
+        log.info("Buscando libros del autor {}", author);
 
         return bookRepository.findByAuthor(author)
                 .stream()

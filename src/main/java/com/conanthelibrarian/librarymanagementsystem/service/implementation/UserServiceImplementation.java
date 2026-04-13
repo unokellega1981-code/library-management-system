@@ -7,30 +7,12 @@ import com.conanthelibrarian.librarymanagementsystem.mapper.UserMapper;
 import com.conanthelibrarian.librarymanagementsystem.repository.LoanRepository;
 import com.conanthelibrarian.librarymanagementsystem.repository.UserRepository;
 import com.conanthelibrarian.librarymanagementsystem.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Implementación del servicio de gestión de usuarios.
- * <p>
- * Contiene la lógica de negocio asociada a la entidad User.
- * Gestiona las operaciones CRUD básicas y transforma los datos
- * entre entidades y DTOs usando UserMapper.
- * <p>
- * Responsabilidades:
- * - Obtener todos los usuarios
- * - Obtener usuario por ID
- * - Crear usuarios
- * - Actualizar usuarios
- * - Eliminar usuarios
- * <p>
- * Lanza:
- * - ResourceNotFoundException cuando el usuario no existe
- * <p>
- * Nota:
- * En un entorno real, el password no debería exponerse en el DTO.
- */
+@Slf4j
 @Service
 public class UserServiceImplementation implements UserService {
 
@@ -42,66 +24,46 @@ public class UserServiceImplementation implements UserService {
         this.loanRepository = loanRepository;
     }
 
-    /**
-     * Obtiene todos los usuarios registrados.
-     *
-     * @return Lista de usuarios en formato DTO.
-     */
     @Override
     public List<UserDTO> getAllUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(UserMapper::toDTO)
-                .toList();
+        log.info("Recuperando todos los usuarios");
+        return userRepository.findAll().stream().map(UserMapper::toDTO).toList();
     }
 
-    /**
-     * Obtiene un usuario por su identificador.
-     *
-     * @param id ID del usuario.
-     * @return Usuario encontrado en formato DTO.
-     * @throws ResourceNotFoundException si el usuario no existe.
-     */
     @Override
     public UserDTO getUserById(Integer id) {
-        User user = userRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("No se ha encontrado ningún usuario con el ID: " + id)
-        );
+        log.info("Buscando usuario con ID {}", id);
+
+        User user = userRepository.findById(id).orElseThrow(() -> {
+            log.warn("Usuario no encontrado con ID {}", id);
+            return new ResourceNotFoundException("No se ha encontrado ningún usuario con el ID: " + id);
+        });
 
         return UserMapper.toDTO(user);
     }
 
-    /**
-     * Crea un nuevo usuario en el sistema.
-     * El ID se genera automáticamente.
-     *
-     * @param userDTO Datos del usuario a crear.
-     * @return Usuario creado en formato DTO.
-     */
     @Override
     public UserDTO createUser(UserDTO userDTO) {
-        User user = UserMapper.toEntity(userDTO);
+        log.info("Creando usuario: {}", userDTO);
 
+        User user = UserMapper.toEntity(userDTO);
         user.setId(null);
 
         User savedUser = userRepository.save(user);
+
+        log.info("Usuario creado con ID {}", savedUser.getId());
+
         return UserMapper.toDTO(savedUser);
     }
 
-    /**
-     * Actualiza los datos de un usuario existente.
-     *
-     * @param id      ID del usuario a actualizar.
-     * @param userDTO Nuevos datos.
-     * @return Usuario actualizado en formato DTO.
-     * @throws ResourceNotFoundException si el usuario no existe.
-     */
     @Override
     public UserDTO updateUser(Integer id, UserDTO userDTO) {
+        log.info("Actualizando usuario con ID {}", id);
 
-        User existingUser = userRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("No se ha encontrado ningún usuario con el ID: " + id)
-        );
+        User existingUser = userRepository.findById(id).orElseThrow(() -> {
+            log.warn("Intento de actualizar usuario inexistente con ID {}", id);
+            return new ResourceNotFoundException("No se ha encontrado ningún usuario con el ID: " + id);
+        });
 
         existingUser.setName(userDTO.getName());
         existingUser.setEmail(userDTO.getEmail());
@@ -110,33 +72,28 @@ public class UserServiceImplementation implements UserService {
 
         User updatedUser = userRepository.save(existingUser);
 
+        log.info("Usuario actualizado con ID {}", id);
+
         return UserMapper.toDTO(updatedUser);
     }
 
-    /**
-     * Elimina un usuario del sistema.
-     *
-     * @param id ID del usuario.
-     * @throws ResourceNotFoundException si el usuario no existe.
-     */
     @Override
     public void deleteUser(Integer id) {
+        log.warn("Eliminando usuario con ID {}", id);
 
-        User existingUser = userRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("No se ha encontrado ningún usuario con el ID: " + id)
-        );
+        User existingUser = userRepository.findById(id).orElseThrow(() -> {
+            log.warn("Intento de borrar usuario inexistente con ID {}", id);
+            return new ResourceNotFoundException("No se ha encontrado ningún usuario con el ID: " + id);
+        });
 
         userRepository.delete(existingUser);
+
+        log.info("Usuario eliminado con ID {}", id);
     }
 
-    /**
-     * Recupera los usuarios que tienen más de X préstamos activos.
-     *
-     * @param x número mínimo de préstamos activos
-     * @return lista de usuarios en formato DTO
-     */
     @Override
     public List<UserDTO> getUsersWithMoreThanXActiveLoans(int x) {
+        log.info("Buscando usuarios con más de {} préstamos activos", x);
 
         return loanRepository.findUsersWithMoreThanXActiveLoans(x)
                 .stream()
@@ -144,21 +101,9 @@ public class UserServiceImplementation implements UserService {
                 .toList();
     }
 
-    /**
-     * Recupera los usuarios que han realizado más de X préstamos
-     * en total (incluyendo préstamos devueltos y activos).
-     *
-     * <p>
-     * Esta operación consulta el repositorio de préstamos y agrupa
-     * por usuario, contando todos los préstamos asociados sin filtrar
-     * por estado de devolución.
-     * </p>
-     *
-     * @param x número mínimo de préstamos totales que debe haber realizado el usuario
-     * @return lista de usuarios en formato DTO que superan ese número de préstamos
-     */
     @Override
     public List<UserDTO> getUsersWithMoreThanXTotalLoans(int x) {
+        log.info("Buscando usuarios con más de {} préstamos totales", x);
 
         return loanRepository.findUsersWithMoreThanXTotalLoans(x)
                 .stream()
@@ -166,23 +111,14 @@ public class UserServiceImplementation implements UserService {
                 .toList();
     }
 
-    /**
-     * Recupera un usuario por su nombre.
-     *
-     * <p>
-     * Si el usuario no existe se lanza una excepción
-     * {@link ResourceNotFoundException}.
-     * </p>
-     *
-     * @param name nombre del usuario
-     * @return usuario encontrado
-     */
     @Override
     public UserDTO getUserByName(String name) {
+        log.info("Buscando usuario por nombre {}", name);
 
-        User user = userRepository.findByName(name)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("User not found with name: " + name));
+        User user = userRepository.findByName(name).orElseThrow(() -> {
+            log.warn("Usuario no encontrado con nombre {}", name);
+            return new ResourceNotFoundException("User not found with name: " + name);
+        });
 
         return UserMapper.toDTO(user);
     }
