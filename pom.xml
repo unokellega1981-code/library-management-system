@@ -47,7 +47,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- 🔥 DATABASE PARA TEST (CLAVE) -->
+        <!-- (OPCIONAL) DATABASE PARA TEST -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -65,6 +65,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- 🔥 IMPORTANTE PARA MOCKITO PURO -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
 
