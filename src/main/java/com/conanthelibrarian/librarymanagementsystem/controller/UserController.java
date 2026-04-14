@@ -1,7 +1,6 @@
 package com.conanthelibrarian.librarymanagementsystem.controller;
 
 import com.conanthelibrarian.librarymanagementsystem.dto.UserDTO;
-import com.conanthelibrarian.librarymanagementsystem.entity.User;
 import com.conanthelibrarian.librarymanagementsystem.mapper.UserMapper;
 import com.conanthelibrarian.librarymanagementsystem.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +36,7 @@ public class UserController {
     @PostMapping("/createuser")
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
         log.info("POST /api/users/createuser - Creando usuario: {}", userDTO);
-        User user = UserMapper.toEntity(userDTO);
+        UserMapper.toEntity(userDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.createUser(userDTO));
     }
@@ -45,7 +44,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
         log.info("PUT /api/users/{} - Actualizando usuario con datos: {}", id, userDTO);
-        User user = UserMapper.toEntity(userDTO);
+        UserMapper.toEntity(userDTO);
         return ResponseEntity.ok(userService.updateUser(id, userDTO));
     }
 

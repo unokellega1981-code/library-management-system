@@ -55,10 +55,6 @@ public class LoanMapper {
             throw new BadRequestException("El campo 'loanDate' es obligatorio");
         }
 
-        if (loanDTO.getDueDate() == null) {
-            throw new BadRequestException("El campo 'dueDate' es obligatorio");
-        }
-
         Loan loan = new Loan();
         loan.setId(loanDTO.getId());
         loan.setLoanDate(loanDTO.getLoanDate());

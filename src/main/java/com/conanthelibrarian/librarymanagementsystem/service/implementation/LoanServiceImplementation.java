@@ -191,7 +191,7 @@ public class LoanServiceImplementation implements LoanService {
                     return new ResourceNotFoundException("No se ha encontrado ningún libro con el ID: " + bookId);
                 });
 
-        if (book.getAvailableCopies() <= 0) {
+        if (book.getAvailableCopies() == null || book.getAvailableCopies() <= 0) {
             log.warn("Sin stock para préstamo libro ID: {}", bookId);
             throw new BadRequestException("No hay copias disponibles del libro con ID: " + bookId);
         }

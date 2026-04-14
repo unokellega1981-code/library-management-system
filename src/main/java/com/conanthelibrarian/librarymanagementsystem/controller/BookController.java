@@ -2,7 +2,6 @@ package com.conanthelibrarian.librarymanagementsystem.controller;
 
 import com.conanthelibrarian.librarymanagementsystem.constants.Genre;
 import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
-import com.conanthelibrarian.librarymanagementsystem.entity.Book;
 import com.conanthelibrarian.librarymanagementsystem.mapper.BookMapper;
 import com.conanthelibrarian.librarymanagementsystem.service.BookService;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +37,7 @@ public class BookController {
     @PostMapping("/createbook")
     public ResponseEntity<BookDTO> createBook(@RequestBody BookDTO bookDTO) {
         log.info("POST /api/books/createbook - Creando libro: {}", bookDTO);
-        Book book = BookMapper.toEntity(bookDTO);
+        BookMapper.toEntity(bookDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(bookService.createBook(bookDTO));
     }
@@ -46,7 +45,7 @@ public class BookController {
     @PutMapping("/{id}")
     public ResponseEntity<BookDTO> updateBook(@PathVariable Integer id, @RequestBody BookDTO bookDTO) {
         log.info("PUT /api/books/{} - Actualizando libro con datos: {}", id, bookDTO);
-        Book book = BookMapper.toEntity(bookDTO);
+        BookMapper.toEntity(bookDTO);
         return ResponseEntity.ok(bookService.updateBook(id, bookDTO));
     }
 

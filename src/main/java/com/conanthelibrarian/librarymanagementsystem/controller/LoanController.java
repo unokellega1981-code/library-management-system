@@ -2,6 +2,7 @@ package com.conanthelibrarian.librarymanagementsystem.controller;
 
 import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.dto.LoanDTO;
+import com.conanthelibrarian.librarymanagementsystem.mapper.LoanMapper;
 import com.conanthelibrarian.librarymanagementsystem.service.LoanService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,7 @@ public class LoanController {
     @PostMapping("/createloan")
     public ResponseEntity<LoanDTO> createLoan(@RequestBody LoanDTO loanDTO) {
         log.info("POST /api/loans/createloan - Creando préstamo: {}", loanDTO);
+        LoanMapper.toEntity(loanDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(loanService.createLoan(loanDTO));
     }
@@ -43,6 +45,7 @@ public class LoanController {
     @PutMapping("/{id}")
     public ResponseEntity<LoanDTO> updateLoan(@PathVariable Integer id, @RequestBody LoanDTO loanDTO) {
         log.info("PUT /api/loans/{} - Actualizando préstamo con datos: {}", id, loanDTO);
+        LoanMapper.toEntity(loanDTO);
         return ResponseEntity.ok(loanService.updateLoan(id, loanDTO));
     }
 
@@ -57,9 +60,7 @@ public class LoanController {
     public ResponseEntity<LoanDTO> lendBookToUser(
             @RequestParam Integer bookId,
             @RequestParam Integer userId) {
-
         log.info("POST /api/loans/lend - Prestando libro {} al usuario {}", bookId, userId);
-
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(loanService.lendBookToUser(bookId, userId));
     }
