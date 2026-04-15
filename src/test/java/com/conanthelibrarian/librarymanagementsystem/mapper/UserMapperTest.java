@@ -3,24 +3,20 @@ package com.conanthelibrarian.librarymanagementsystem.mapper;
 import com.conanthelibrarian.librarymanagementsystem.constants.Role;
 import com.conanthelibrarian.librarymanagementsystem.dto.UserDTO;
 import com.conanthelibrarian.librarymanagementsystem.entity.User;
-
+import com.conanthelibrarian.librarymanagementsystem.exception.BadRequestException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Tests unitarios para UserMapper.
- * <p>
- * Verifica la conversión entre User y UserDTO.
- */
+@ExtendWith(MockitoExtension.class)
 class UserMapperTest {
 
-    /**
-     * Comprueba conversión Entity → DTO.
-     */
     @Test
     void shouldConvertEntityToDTO() {
 
+        // GIVEN
         User user = new User();
         user.setId(1);
         user.setName("Juan");
@@ -28,56 +24,53 @@ class UserMapperTest {
         user.setPassword("1234");
         user.setRole(Role.MEMBER);
 
-        UserDTO dto = UserMapper.toDTO(user);
+        // WHEN
+        UserDTO userDTO = UserMapper.toDTO(user);
 
-        assertEquals(user.getId(), dto.getId());
-        assertEquals(user.getName(), dto.getName());
-        assertEquals(user.getEmail(), dto.getEmail());
-        assertEquals(user.getPassword(), dto.getPassword());
-        assertEquals(user.getRole(), dto.getRole());
+        // THEN
+        assertEquals(user.getId(), userDTO.getId());
+        assertEquals(user.getName(), userDTO.getName());
+        assertEquals(user.getEmail(), userDTO.getEmail());
+        assertEquals(user.getPassword(), userDTO.getPassword());
+        assertEquals(user.getRole(), userDTO.getRole());
     }
 
-    /**
-     * Comprueba conversión DTO → Entity.
-     */
     @Test
     void shouldConvertDTOToEntity() {
 
-        UserDTO dto = new UserDTO();
-        dto.setId(1);
-        dto.setName("Maria");
-        dto.setEmail("maria@test.com");
-        dto.setPassword("abcd");
-        dto.setRole(Role.MEMBER);
+        // GIVEN
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(1);
+        userDTO.setName("Maria");
+        userDTO.setEmail("maria@test.com");
+        userDTO.setPassword("abcd");
+        userDTO.setRole(Role.MEMBER);
 
-        User user = UserMapper.toEntity(dto);
+        // WHEN
+        User user = UserMapper.toEntity(userDTO);
 
-        assertEquals(dto.getId(), user.getId());
-        assertEquals(dto.getName(), user.getName());
-        assertEquals(dto.getEmail(), user.getEmail());
-        assertEquals(dto.getPassword(), user.getPassword());
-        assertEquals(dto.getRole(), user.getRole());
+        // THEN
+        assertEquals(userDTO.getId(), user.getId());
+        assertEquals(userDTO.getName(), user.getName());
+        assertEquals(userDTO.getEmail(), user.getEmail());
+        assertEquals(userDTO.getPassword(), user.getPassword());
+        assertEquals(userDTO.getRole(), user.getRole());
     }
 
-    /**
-     * Comprueba que devuelve null si la entidad es null.
-     */
     @Test
     void shouldReturnNullWhenEntityIsNull() {
 
-        UserDTO dto = UserMapper.toDTO(null);
+        // WHEN
+        UserDTO userDTO = UserMapper.toDTO(null);
 
-        assertNull(dto);
+        // THEN
+        assertNull(userDTO);
     }
 
-    /**
-     * Comprueba que devuelve null si el DTO es null.
-     */
     @Test
-    void shouldReturnNullWhenDTOIsNull() {
+    void shouldThrowExceptionWhenDTOIsNull() {
 
-        User user = UserMapper.toEntity(null);
-
-        assertNull(user);
+        // THEN
+        assertThrows(BadRequestException.class, () -> UserMapper.toEntity(null));
     }
 }

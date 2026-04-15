@@ -3,32 +3,20 @@ package com.conanthelibrarian.librarymanagementsystem.mapper;
 import com.conanthelibrarian.librarymanagementsystem.constants.Genre;
 import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.entity.Book;
-
+import com.conanthelibrarian.librarymanagementsystem.exception.BadRequestException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Tests unitarios para {@link BookMapper}.
- *
- * <p>
- * Verifica que la conversión entre {@link Book} y {@link BookDTO}
- * se realiza correctamente en ambos sentidos.
- * </p>
- *
- * <p>
- * También comprueba el comportamiento cuando los valores
- * de entrada son {@code null}.
- * </p>
- */
+@ExtendWith(MockitoExtension.class)
 class BookMapperTest {
 
-    /**
-     * Comprueba la conversión de Entity a DTO.
-     */
     @Test
     void shouldConvertEntityToDTO() {
 
+        // GIVEN
         Book book = new Book();
         book.setId(1);
         book.setTitle("1984");
@@ -37,62 +25,56 @@ class BookMapperTest {
         book.setGenre(Genre.FANTASY);
         book.setAvailableCopies(3);
 
-        BookDTO dto = BookMapper.toDTO(book);
+        // WHEN
+        BookDTO bookDTO = BookMapper.toDTO(book);
 
-        assertEquals(book.getId(), dto.getId());
-        assertEquals(book.getTitle(), dto.getTitle());
-        assertEquals(book.getAuthor(), dto.getAuthor());
-        assertEquals(book.getIsbn(), dto.getIsbn());
-        assertEquals(book.getGenre(), dto.getGenre());
-        assertEquals(book.getAvailableCopies(), dto.getAvailableCopies());
+        // THEN
+        assertEquals(book.getId(), bookDTO.getId());
+        assertEquals(book.getTitle(), bookDTO.getTitle());
+        assertEquals(book.getAuthor(), bookDTO.getAuthor());
+        assertEquals(book.getIsbn(), bookDTO.getIsbn());
+        assertEquals(book.getGenre(), bookDTO.getGenre());
+        assertEquals(book.getAvailableCopies(), bookDTO.getAvailableCopies());
     }
 
-    /**
-     * Comprueba la conversión de DTO a Entity.
-     */
     @Test
     void shouldConvertDTOToEntity() {
 
-        BookDTO dto = new BookDTO();
-        dto.setId(1);
-        dto.setTitle("Dune");
-        dto.setAuthor("Frank Herbert");
-        dto.setIsbn("654321");
-        dto.setGenre(Genre.SCIENCE_FICTION);
-        dto.setAvailableCopies(5);
+        // GIVEN
+        BookDTO bookDTO = new BookDTO();
+        bookDTO.setId(1);
+        bookDTO.setTitle("Dune");
+        bookDTO.setAuthor("Frank Herbert");
+        bookDTO.setIsbn("654321");
+        bookDTO.setGenre(Genre.SCIENCE_FICTION);
+        bookDTO.setAvailableCopies(5);
 
-        Book book = BookMapper.toEntity(dto);
+        // WHEN
+        Book book = BookMapper.toEntity(bookDTO);
 
-        assertEquals(dto.getId(), book.getId());
-        assertEquals(dto.getTitle(), book.getTitle());
-        assertEquals(dto.getAuthor(), book.getAuthor());
-        assertEquals(dto.getIsbn(), book.getIsbn());
-        assertEquals(dto.getGenre(), book.getGenre());
-        assertEquals(dto.getAvailableCopies(), book.getAvailableCopies());
+        // THEN
+        assertEquals(bookDTO.getId(), book.getId());
+        assertEquals(bookDTO.getTitle(), book.getTitle());
+        assertEquals(bookDTO.getAuthor(), book.getAuthor());
+        assertEquals(bookDTO.getIsbn(), book.getIsbn());
+        assertEquals(bookDTO.getGenre(), book.getGenre());
+        assertEquals(bookDTO.getAvailableCopies(), book.getAvailableCopies());
     }
 
-    /**
-     * Comprueba que si la entidad es null
-     * el mapper devuelve null.
-     */
     @Test
     void shouldReturnNullWhenEntityIsNull() {
 
-        BookDTO dto = BookMapper.toDTO(null);
+        // WHEN
+        BookDTO bookDTO = BookMapper.toDTO(null);
 
-        assertNull(dto);
+        // THEN
+        assertNull(bookDTO);
     }
 
-    /**
-     * Comprueba que si el DTO es null
-     * el mapper devuelve null.
-     */
     @Test
-    void shouldReturnNullWhenDTOIsNull() {
+    void shouldThrowExceptionWhenDTOIsNull() {
 
-        Book book = BookMapper.toEntity(null);
-
-        assertNull(book);
+        // THEN
+        assertThrows(BadRequestException.class, () -> BookMapper.toEntity(null));
     }
-
 }

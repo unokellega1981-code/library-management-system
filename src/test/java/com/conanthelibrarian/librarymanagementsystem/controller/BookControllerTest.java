@@ -28,23 +28,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * Tests unitarios para {@link BookController}.
- *
- * <p>
- * Utiliza {@link WebMvcTest} para cargar únicamente la capa web
- * del controlador y {@link MockBean} para simular el servicio.
- * </p>
- *
- * <p>
- * Se comprueba que los endpoints REST:
- * </p>
- *
- * <ul>
- * <li>Responden con el código HTTP correcto</li>
- * <li>Devuelven los datos esperados en formato JSON</li>
- * </ul>
- */
 @WebMvcTest(BookController.class)
 class BookControllerTest {
 
@@ -60,19 +43,12 @@ class BookControllerTest {
     private BookDTO book1;
     private BookDTO book2;
 
-    /**
-     * Inicializa los objetos de prueba antes de cada test.
-     */
     @BeforeEach
     void setUp() {
         book1 = new BookDTO(1, "Libro A", "Autor A", "547467", Genre.FANTASY, 4);
         book2 = new BookDTO(2, "Libro B", "Autor B", "35747", Genre.SCIENCE_FICTION, 6);
     }
 
-    /**
-     * Comprueba que el endpoint GET /api/books
-     * devuelve la lista de libros.
-     */
     @Test
     void getAllBooks_shouldReturnList() throws Exception {
 
@@ -83,10 +59,6 @@ class BookControllerTest {
                 .andExpect(jsonPath("$", hasSize(2)));
     }
 
-    /**
-     * Comprueba que el endpoint GET /api/books/{id}
-     * devuelve un libro concreto.
-     */
     @Test
     void getBookById_shouldReturnBook() throws Exception {
 
@@ -97,10 +69,6 @@ class BookControllerTest {
                 .andExpect(jsonPath("$.title", is("Libro A")));
     }
 
-    /**
-     * Comprueba la creación de un libro mediante
-     * el endpoint POST /api/books.
-     */
     @Test
     void createBook_shouldReturnCreatedBook() throws Exception {
 
@@ -112,10 +80,6 @@ class BookControllerTest {
                 .andExpect(status().isCreated());
     }
 
-    /**
-     * Comprueba la actualización de un libro mediante
-     * el endpoint PUT /api/books/{id}.
-     */
     @Test
     void updateBook_shouldReturnUpdatedBook() throws Exception {
 
@@ -127,10 +91,6 @@ class BookControllerTest {
                 .andExpect(status().isOk());
     }
 
-    /**
-     * Comprueba la eliminación de un libro mediante
-     * el endpoint DELETE /api/books/{id}.
-     */
     @Test
     void deleteBook_shouldReturnNoContent() throws Exception {
 
@@ -140,10 +100,6 @@ class BookControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-    /**
-     * Comprueba que el endpoint GET /api/books/genre/{genre}
-     * devuelve libros filtrados por género.
-     */
     @Test
     void getBooksByGenre_shouldReturnList() throws Exception {
 
@@ -153,10 +109,6 @@ class BookControllerTest {
                 .andExpect(status().isOk());
     }
 
-    /**
-     * Comprueba que el endpoint GET /api/books/on-loan
-     * devuelve los libros actualmente prestados.
-     */
     @Test
     void getBooksCurrentlyOnLoan_shouldReturnList() throws Exception {
 
@@ -166,10 +118,6 @@ class BookControllerTest {
                 .andExpect(status().isOk());
     }
 
-    /**
-     * Comprueba que el endpoint GET /api/books/author/{author}
-     * devuelve los libros escritos por un autor específico.
-     */
     @Test
     void getBooksByAuthor_shouldReturnList() throws Exception {
 
