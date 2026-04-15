@@ -10,10 +10,8 @@ import com.conanthelibrarian.librarymanagementsystem.repository.BookRepository;
 import com.conanthelibrarian.librarymanagementsystem.repository.LoanRepository;
 import com.conanthelibrarian.librarymanagementsystem.repository.UserRepository;
 import com.conanthelibrarian.librarymanagementsystem.service.implementation.LoanServiceImplementation;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,12 +23,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Tests unitarios para LoanServiceImplementation.
- * <p>
- * Se comprueba toda la lógica de negocio del servicio de préstamos
- * utilizando mocks para los repositorios.
- */
 @ExtendWith(MockitoExtension.class)
 class LoanServiceImplementationTest {
 
@@ -38,34 +30,28 @@ class LoanServiceImplementationTest {
     private LoanRepository loanRepository;
 
     @Mock
-    private UserRepository userRepository;
-
-    @Mock
     private BookRepository bookRepository;
 
-    @InjectMocks
-    private LoanServiceImplementation loanService;
+    @Mock
+    private UserRepository userRepository;
 
-    /**
-     * Comprueba que se devuelven todos los préstamos.
-     */
+    @InjectMocks
+    private LoanServiceImplementation loanServiceImplementation;
+
     @Test
     void shouldReturnAllLoans() {
 
-        Loan loan1 = new Loan();
-        Loan loan2 = new Loan();
+        Loan loanUno = new Loan();
+        Loan loanDos = new Loan();
 
-        when(loanRepository.findAll()).thenReturn(List.of(loan1, loan2));
+        when(loanRepository.findAll()).thenReturn(List.of(loanUno, loanDos));
 
-        var result = loanService.getAllLoans();
+        var result = loanServiceImplementation.getAllLoans();
 
         assertEquals(2, result.size());
         verify(loanRepository).findAll();
     }
 
-    /**
-     * Comprueba obtener préstamo por ID.
-     */
     @Test
     void shouldReturnLoanById() {
 
@@ -74,27 +60,21 @@ class LoanServiceImplementationTest {
 
         when(loanRepository.findById(1)).thenReturn(Optional.of(loan));
 
-        var result = loanService.getLoanById(1);
+        var result = loanServiceImplementation.getLoanById(1);
 
         assertNotNull(result);
         verify(loanRepository).findById(1);
     }
 
-    /**
-     * Comprueba excepción si el préstamo no existe.
-     */
     @Test
     void shouldThrowExceptionIfLoanNotFound() {
 
         when(loanRepository.findById(1)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
-                () -> loanService.getLoanById(1));
+                () -> loanServiceImplementation.getLoanById(1));
     }
 
-    /**
-     * Comprueba crear préstamo correctamente.
-     */
     @Test
     void shouldCreateLoan() {
 
@@ -108,16 +88,16 @@ class LoanServiceImplementationTest {
         Loan loan = new Loan();
         loan.setLoanDate(LocalDate.now());
 
-        LoanDTO dto = new LoanDTO();
-        dto.setUserId(1);
-        dto.setBookId(1);
-        dto.setLoanDate(LocalDate.now());
+        LoanDTO loanDTO = new LoanDTO();
+        loanDTO.setUserId(1);
+        loanDTO.setBookId(1);
+        loanDTO.setLoanDate(LocalDate.now());
 
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
         when(bookRepository.findById(1)).thenReturn(Optional.of(book));
         when(loanRepository.save(any())).thenReturn(loan);
 
-        var result = loanService.createLoan(dto);
+        var result = loanServiceImplementation.createLoan(loanDTO);
 
         assertNotNull(result);
 
@@ -125,9 +105,6 @@ class LoanServiceImplementationTest {
         verify(loanRepository).save(any());
     }
 
-    /**
-     * Comprueba que no se puede crear préstamo sin copias.
-     */
     @Test
     void shouldThrowExceptionIfNoCopiesAvailable() {
 
@@ -146,12 +123,9 @@ class LoanServiceImplementationTest {
         when(bookRepository.findById(1)).thenReturn(Optional.of(book));
 
         assertThrows(BadRequestException.class,
-                () -> loanService.createLoan(dto));
+                () -> loanServiceImplementation.createLoan(dto));
     }
 
-    /**
-     * Comprueba eliminar préstamo devuelto.
-     */
     @Test
     void shouldDeleteLoan() {
 
@@ -161,14 +135,11 @@ class LoanServiceImplementationTest {
 
         when(loanRepository.findById(1)).thenReturn(Optional.of(loan));
 
-        loanService.deleteLoan(1);
+        loanServiceImplementation.deleteLoan(1);
 
         verify(loanRepository).delete(loan);
     }
 
-    /**
-     * Comprueba que no se puede borrar un préstamo no devuelto.
-     */
     @Test
     void shouldThrowExceptionIfLoanNotReturned() {
 
@@ -178,12 +149,9 @@ class LoanServiceImplementationTest {
         when(loanRepository.findById(1)).thenReturn(Optional.of(loan));
 
         assertThrows(BadRequestException.class,
-                () -> loanService.deleteLoan(1));
+                () -> loanServiceImplementation.deleteLoan(1));
     }
 
-    /**
-     * Comprueba préstamo rápido (quick loan).
-     */
     @Test
     void shouldLendBookToUser() {
 
@@ -198,7 +166,7 @@ class LoanServiceImplementationTest {
         when(bookRepository.findById(1)).thenReturn(Optional.of(book));
         when(loanRepository.save(any())).thenReturn(new Loan());
 
-        var result = loanService.lendBookToUser(1, 1);
+        var result = loanServiceImplementation.lendBookToUser(1, 1);
 
         assertNotNull(result);
 
@@ -206,9 +174,6 @@ class LoanServiceImplementationTest {
         verify(loanRepository).save(any());
     }
 
-    /**
-     * Comprueba devolución de libro.
-     */
     @Test
     void shouldReturnBook() {
 
@@ -224,7 +189,7 @@ class LoanServiceImplementationTest {
         when(loanRepository.findById(1)).thenReturn(Optional.of(loan));
         when(loanRepository.save(any())).thenReturn(loan);
 
-        var result = loanService.returnBook(1);
+        var result = loanServiceImplementation.returnBook(1);
 
         assertNotNull(result);
         assertNotNull(loan.getReturnedDate());
@@ -232,9 +197,6 @@ class LoanServiceImplementationTest {
         verify(loanRepository).save(loan);
     }
 
-    /**
-     * Comprueba que no se puede devolver dos veces.
-     */
     @Test
     void shouldThrowExceptionIfAlreadyReturned() {
 
@@ -244,7 +206,6 @@ class LoanServiceImplementationTest {
         when(loanRepository.findById(1)).thenReturn(Optional.of(loan));
 
         assertThrows(BadRequestException.class,
-                () -> loanService.returnBook(1));
+                () -> loanServiceImplementation.returnBook(1));
     }
-
 }

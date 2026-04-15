@@ -19,24 +19,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Tests unitarios para la clase UserServiceImplementation.
- *
- * <p>
- * Estos tests verifican la lógica del servicio aislando
- * el acceso a la base de datos mediante mocks de los repositorios.
- * </p>
- *
- * <p>
- * Se comprueba:
- * - Obtención de usuarios
- * - Búsqueda por ID
- * - Creación de usuarios
- * - Actualización
- * - Eliminación
- * - Consultas por número de préstamos
- * </p>
- */
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplementationTest {
 
@@ -47,81 +29,86 @@ class UserServiceImplementationTest {
     private LoanRepository loanRepository;
 
     @InjectMocks
-    private UserServiceImplementation userService;
+    private UserServiceImplementation userServiceImplementation;
 
-    /**
-     * Comprueba que el servicio devuelve todos los usuarios.
-     */
     @Test
     void shouldReturnAllUsers() {
 
-        User user1 = new User();
-        User user2 = new User();
+        // GIVEN
+        User userUno = new User();
+        User userDos = new User();
 
-        when(userRepository.findAll()).thenReturn(List.of(user1, user2));
+        when(userRepository.findAll()).thenReturn(List.of(userUno, userDos));
 
-        List<UserDTO> result = userService.getAllUsers();
+        // WHEN
+        List<UserDTO> result = userServiceImplementation.getAllUsers();
 
+        // THEN
         assertEquals(2, result.size());
-        verify(userRepository, times(1)).findAll();
+        verify(userRepository).findAll();
+        verifyNoMoreInteractions(userRepository);
     }
 
-    /**
-     * Comprueba que se obtiene correctamente un usuario por ID.
-     */
     @Test
     void shouldReturnUserById() {
 
+        // GIVEN
         User user = new User();
         user.setId(1);
 
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
 
-        UserDTO result = userService.getUserById(1);
+        // WHEN
+        UserDTO result = userServiceImplementation.getUserById(1);
 
+        // THEN
         assertNotNull(result);
+        assertEquals(1, result.getId());
         verify(userRepository).findById(1);
     }
 
-    /**
-     * Comprueba que se lanza una excepción cuando el usuario no existe.
-     */
     @Test
     void shouldThrowExceptionWhenUserNotFound() {
 
+        // GIVEN
         when(userRepository.findById(1)).thenReturn(Optional.empty());
 
+        // WHEN + THEN
         assertThrows(ResourceNotFoundException.class,
-                () -> userService.getUserById(1));
+                () -> userServiceImplementation.getUserById(1));
+
+        verify(userRepository).findById(1);
     }
 
-    /**
-     * Comprueba que se crea correctamente un usuario.
-     */
     @Test
     void shouldCreateUser() {
 
+        // GIVEN
         UserDTO dto = new UserDTO();
         dto.setName("Test User");
         dto.setEmail("test@test.com");
 
         User savedUser = new User();
         savedUser.setId(1);
+        savedUser.setName("Test User");
 
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
-        UserDTO result = userService.createUser(dto);
+        // WHEN
+        UserDTO result = userServiceImplementation.createUser(dto);
 
+        // THEN
         assertNotNull(result);
+        assertEquals(1, result.getId());
+        assertEquals("Test User", result.getName());
+
         verify(userRepository).save(any(User.class));
     }
 
-    /**
-     * Comprueba que se actualiza correctamente un usuario existente.
-     */
     @Test
     void shouldUpdateUser() {
 
+        // GIVEN
         User existingUser = new User();
         existingUser.setId(1);
 
@@ -132,111 +119,122 @@ class UserServiceImplementationTest {
         dto.setRole(Role.MEMBER);
 
         when(userRepository.findById(1)).thenReturn(Optional.of(existingUser));
-        when(userRepository.save(any(User.class))).thenReturn(existingUser);
+        when(userRepository.save(existingUser)).thenReturn(existingUser);
 
-        UserDTO result = userService.updateUser(1, dto);
+        // WHEN
+        UserDTO result = userServiceImplementation.updateUser(1, dto);
 
+        // THEN
         assertNotNull(result);
         verify(userRepository).findById(1);
         verify(userRepository).save(existingUser);
     }
 
-    /**
-     * Comprueba que se lanza excepción si se intenta actualizar
-     * un usuario que no existe.
-     */
     @Test
     void shouldThrowExceptionWhenUpdatingNonExistingUser() {
 
-        UserDTO dto = new UserDTO();
-
+        // GIVEN
         when(userRepository.findById(1)).thenReturn(Optional.empty());
 
+        // WHEN + THEN
         assertThrows(ResourceNotFoundException.class,
-                () -> userService.updateUser(1, dto));
+                () -> userServiceImplementation.updateUser(1, new UserDTO()));
+
+        verify(userRepository).findById(1);
     }
 
-    /**
-     * Comprueba que se elimina correctamente un usuario.
-     */
     @Test
     void shouldDeleteUser() {
 
+        // GIVEN
         User user = new User();
         user.setId(1);
 
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
 
-        userService.deleteUser(1);
+        // WHEN
+        userServiceImplementation.deleteUser(1);
 
+        // THEN
         verify(userRepository).delete(user);
     }
 
-    /**
-     * Comprueba que se lanza excepción al intentar eliminar
-     * un usuario que no existe.
-     */
     @Test
     void shouldThrowExceptionWhenDeletingNonExistingUser() {
 
+        // GIVEN
         when(userRepository.findById(1)).thenReturn(Optional.empty());
 
+        // WHEN + THEN
         assertThrows(ResourceNotFoundException.class,
-                () -> userService.deleteUser(1));
+                () -> userServiceImplementation.deleteUser(1));
+
+        verify(userRepository).findById(1);
     }
 
-    /**
-     * Comprueba que se devuelven los usuarios que tienen
-     * más de X préstamos activos.
-     */
     @Test
     void shouldReturnUsersWithMoreThanXActiveLoans() {
 
+        // GIVEN
         User user = new User();
 
         when(loanRepository.findUsersWithMoreThanXActiveLoans(2))
                 .thenReturn(List.of(user));
 
-        List<UserDTO> result = userService.getUsersWithMoreThanXActiveLoans(2);
+        // WHEN
+        List<UserDTO> result = userServiceImplementation.getUsersWithMoreThanXActiveLoans(2);
 
+        // THEN
         assertEquals(1, result.size());
         verify(loanRepository).findUsersWithMoreThanXActiveLoans(2);
     }
 
-    /**
-     * Comprueba que se devuelven los usuarios que tienen
-     * más de X préstamos totales.
-     */
     @Test
     void shouldReturnUsersWithMoreThanXTotalLoans() {
 
+        // GIVEN
         User user = new User();
 
         when(loanRepository.findUsersWithMoreThanXTotalLoans(3))
                 .thenReturn(List.of(user));
 
-        List<UserDTO> result = userService.getUsersWithMoreThanXTotalLoans(3);
+        // WHEN
+        List<UserDTO> result = userServiceImplementation.getUsersWithMoreThanXTotalLoans(3);
 
+        // THEN
         assertEquals(1, result.size());
         verify(loanRepository).findUsersWithMoreThanXTotalLoans(3);
     }
 
-    /**
-     * Comprueba que se obtiene correctamente un usuario
-     * a partir de su nombre.
-     */
     @Test
     void shouldReturnUserByName() {
 
+        // GIVEN
         User user = new User();
         user.setName("Juan");
 
         when(userRepository.findByName("Juan"))
                 .thenReturn(Optional.of(user));
 
-        UserDTO result = userService.getUserByName("Juan");
+        // WHEN
+        UserDTO result = userServiceImplementation.getUserByName("Juan");
 
+        // THEN
         assertNotNull(result);
+        verify(userRepository).findByName("Juan");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserNotFoundByName() {
+
+        // GIVEN
+        when(userRepository.findByName("Juan"))
+                .thenReturn(Optional.empty());
+
+        // WHEN + THEN
+        assertThrows(ResourceNotFoundException.class,
+                () -> userServiceImplementation.getUserByName("Juan"));
+
         verify(userRepository).findByName("Juan");
     }
 }
