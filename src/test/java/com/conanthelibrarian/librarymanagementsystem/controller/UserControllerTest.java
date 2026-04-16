@@ -3,133 +3,155 @@ package com.conanthelibrarian.librarymanagementsystem.controller;
 import com.conanthelibrarian.librarymanagementsystem.constants.Role;
 import com.conanthelibrarian.librarymanagementsystem.dto.UserDTO;
 import com.conanthelibrarian.librarymanagementsystem.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import org.mockito.Mockito;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
-import org.springframework.http.MediaType;
-
-import org.springframework.test.web.servlet.MockMvc;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-/**
- * Tests unitarios para {@link UserController}.
- *
- * <p>
- * Comprueba el funcionamiento de los endpoints REST
- * relacionados con la gestión de usuarios.
- * </p>
- */
-@WebMvcTest(UserController.class)
+@ExtendWith(MockitoExtension.class)
 class UserControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private UserService userService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @InjectMocks
+    private UserController userController;
 
-    private UserDTO user;
+    private UserDTO userDTO;
 
     @BeforeEach
     void setUp() {
-
-        user = new UserDTO(1, "Juan", "juan@email.com", "3557", Role.MEMBER);
+        userDTO = new UserDTO(1, "Juan", "juan@email.com", "1234", Role.MEMBER);
     }
 
-    /**
-     * Comprueba la recuperación de todos los usuarios.
-     */
     @Test
-    void getAllUsers_shouldReturnList() throws Exception {
+    void shouldReturnAllUsers() {
 
-        Mockito.when(userService.getAllUsers()).thenReturn(List.of(user));
+        // GIVEN
+        when(userService.getAllUsers()).thenReturn(List.of(userDTO));
 
-        mockMvc.perform(get("/api/users"))
-                .andExpect(status().isOk());
+        // WHEN
+        ResponseEntity<List<UserDTO>> response = userController.getAllUsers();
+
+        // THEN
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(1, response.getBody().size());
+        verify(userService).getAllUsers();
     }
 
-    /**
-     * Comprueba la recuperación de un usuario por su ID.
-     */
     @Test
-    void getUserById_shouldReturnUser() throws Exception {
+    void shouldReturnUserById() {
 
-        Mockito.when(userService.getUserById(1)).thenReturn(user);
+        // GIVEN
+        when(userService.getUserById(1)).thenReturn(userDTO);
 
-        mockMvc.perform(get("/api/users/1"))
-                .andExpect(status().isOk());
+        // WHEN
+        ResponseEntity<UserDTO> response = userController.getUserById(1);
+
+        // THEN
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Juan", response.getBody().getName());
+        verify(userService).getUserById(1);
     }
 
-    /**
-     * Comprueba la creación de un usuario.
-     */
     @Test
-    void createUser_shouldReturnCreatedUser() throws Exception {
+    void shouldCreateUser() {
 
-        Mockito.when(userService.createUser(any(UserDTO.class))).thenReturn(user);
+        // GIVEN
+        when(userService.createUser(any(UserDTO.class))).thenReturn(userDTO);
 
-        mockMvc.perform(post("/api/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isCreated());
+        // WHEN
+        ResponseEntity<UserDTO> response = userController.createUser(userDTO);
+
+        // THEN
+        assertEquals(201, response.getStatusCodeValue());
+        assertEquals(userDTO, response.getBody());
+        verify(userService).createUser(userDTO);
     }
 
-    /**
-     * Comprueba la actualización de un usuario.
-     */
     @Test
-    void updateUser_shouldReturnUpdatedUser() throws Exception {
+    void shouldUpdateUser() {
 
-        Mockito.when(userService.updateUser(anyInt(), any(UserDTO.class))).thenReturn(user);
+        // GIVEN
+        when(userService.updateUser(1, userDTO)).thenReturn(userDTO);
 
-        mockMvc.perform(put("/api/users/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isOk());
+        // WHEN
+        ResponseEntity<UserDTO> response = userController.updateUser(1, userDTO);
+
+        // THEN
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(userDTO, response.getBody());
+        verify(userService).updateUser(1, userDTO);
     }
 
-    /**
-     * Comprueba la eliminación de un usuario.
-     */
     @Test
-    void deleteUser_shouldReturnNoContent() throws Exception {
+    void shouldDeleteUser() {
 
-        Mockito.doNothing().when(userService).deleteUser(1);
+        // GIVEN
+        doNothing().when(userService).deleteUser(1);
 
-        mockMvc.perform(delete("/api/users/1"))
-                .andExpect(status().isNoContent());
+        // WHEN
+        ResponseEntity<Void> response = userController.deleteUser(1);
+
+        // THEN
+        assertEquals(204, response.getStatusCodeValue());
+        verify(userService).deleteUser(1);
     }
 
-    /**
-     * Comprueba que el endpoint GET /api/users/name/{name}
-     * devuelve un usuario a partir de su nombre.
-     */
     @Test
-    void getUserByName_shouldReturnUser() throws Exception {
+    void shouldReturnUserByName() {
 
-        Mockito.when(userService.getUserByName("Juan"))
-                .thenReturn(user);
+        // GIVEN
+        when(userService.getUserByName("Juan")).thenReturn(userDTO);
 
-        mockMvc.perform(get("/api/users/name/Juan"))
-                .andExpect(status().isOk());
+        // WHEN
+        ResponseEntity<UserDTO> response = userController.getUserByName("Juan");
+
+        // THEN
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Juan", response.getBody().getName());
+        verify(userService).getUserByName("Juan");
+    }
+
+    @Test
+    void shouldReturnUsersWithMoreThanXActiveLoans() {
+
+        // GIVEN
+        when(userService.getUsersWithMoreThanXActiveLoans(2))
+                .thenReturn(List.of(userDTO));
+
+        // WHEN
+        ResponseEntity<List<UserDTO>> response =
+                userController.getUsersWithMoreThanXActiveLoans(2);
+
+        // THEN
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(1, response.getBody().size());
+        verify(userService).getUsersWithMoreThanXActiveLoans(2);
+    }
+
+    @Test
+    void shouldReturnUsersWithMoreThanXTotalLoans() {
+
+        // GIVEN
+        when(userService.getUsersWithMoreThanXTotalLoans(3))
+                .thenReturn(List.of(userDTO));
+
+        // WHEN
+        ResponseEntity<List<UserDTO>> response =
+                userController.getUsersWithMoreThanXTotalLoans(3);
+
+        // THEN
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(1, response.getBody().size());
+        verify(userService).getUsersWithMoreThanXTotalLoans(3);
     }
 }

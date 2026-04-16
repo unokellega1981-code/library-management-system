@@ -3,129 +3,153 @@ package com.conanthelibrarian.librarymanagementsystem.controller;
 import com.conanthelibrarian.librarymanagementsystem.constants.Genre;
 import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.service.BookService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import org.mockito.Mockito;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
-import org.springframework.http.MediaType;
-
-import org.springframework.test.web.servlet.MockMvc;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-@WebMvcTest(BookController.class)
+@ExtendWith(MockitoExtension.class)
 class BookControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private BookService bookService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @InjectMocks
+    private BookController bookController;
 
-    private BookDTO book1;
-    private BookDTO book2;
+    private BookDTO bookUno;
+    private BookDTO bookDos;
 
     @BeforeEach
     void setUp() {
-        book1 = new BookDTO(1, "Libro A", "Autor A", "547467", Genre.FANTASY, 4);
-        book2 = new BookDTO(2, "Libro B", "Autor B", "35747", Genre.SCIENCE_FICTION, 6);
+        bookUno = new BookDTO(1, "Libro A", "Autor A", "123", Genre.FANTASY, 4);
+        bookDos = new BookDTO(2, "Libro B", "Autor B", "456", Genre.SCIENCE_FICTION, 6);
     }
 
     @Test
-    void getAllBooks_shouldReturnList() throws Exception {
+    void shouldReturnAllBooks() {
 
-        Mockito.when(bookService.getAllBooks()).thenReturn(List.of(book1, book2));
+        // GIVEN
+        when(bookService.getAllBooks()).thenReturn(List.of(bookUno, bookDos));
 
-        mockMvc.perform(get("/api/books"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+        // WHEN
+        ResponseEntity<List<BookDTO>> response = bookController.getAllBooks();
+
+        // THEN
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(2, response.getBody().size());
+        verify(bookService).getAllBooks();
     }
 
     @Test
-    void getBookById_shouldReturnBook() throws Exception {
+    void shouldReturnBookById() {
 
-        Mockito.when(bookService.getBookById(1)).thenReturn(book1);
+        // GIVEN
+        when(bookService.getBookById(1)).thenReturn(bookUno);
 
-        mockMvc.perform(get("/api/books/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title", is("Libro A")));
+        // WHEN
+        ResponseEntity<BookDTO> response = bookController.getBookById(1);
+
+        // THEN
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Libro A", response.getBody().getTitle());
+        verify(bookService).getBookById(1);
     }
 
     @Test
-    void createBook_shouldReturnCreatedBook() throws Exception {
+    void shouldCreateBook() {
 
-        Mockito.when(bookService.createBook(any(BookDTO.class))).thenReturn(book1);
+        // GIVEN
+        when(bookService.createBook(any(BookDTO.class))).thenReturn(bookUno);
 
-        mockMvc.perform(post("/api/books")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(book1)))
-                .andExpect(status().isCreated());
+        // WHEN
+        ResponseEntity<BookDTO> response = bookController.createBook(bookUno);
+
+        // THEN
+        assertEquals(201, response.getStatusCodeValue());
+        assertEquals(bookUno, response.getBody());
+        verify(bookService).createBook(bookUno);
     }
 
     @Test
-    void updateBook_shouldReturnUpdatedBook() throws Exception {
+    void shouldUpdateBook() {
 
-        Mockito.when(bookService.updateBook(anyInt(), any(BookDTO.class))).thenReturn(book1);
+        // GIVEN
+        when(bookService.updateBook(1, bookUno)).thenReturn(bookUno);
 
-        mockMvc.perform(put("/api/books/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(book1)))
-                .andExpect(status().isOk());
+        // WHEN
+        ResponseEntity<BookDTO> response = bookController.updateBook(1, bookUno);
+
+        // THEN
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(bookUno, response.getBody());
+        verify(bookService).updateBook(1, bookUno);
     }
 
     @Test
-    void deleteBook_shouldReturnNoContent() throws Exception {
+    void shouldDeleteBook() {
 
-        Mockito.doNothing().when(bookService).deleteBook(1);
+        // GIVEN
+        doNothing().when(bookService).deleteBook(1);
 
-        mockMvc.perform(delete("/api/books/1"))
-                .andExpect(status().isNoContent());
+        // WHEN
+        ResponseEntity<Void> response = bookController.deleteBook(1);
+
+        // THEN
+        assertEquals(204, response.getStatusCodeValue());
+        verify(bookService).deleteBook(1);
     }
 
     @Test
-    void getBooksByGenre_shouldReturnList() throws Exception {
+    void shouldReturnBooksByGenre() {
 
-        Mockito.when(bookService.getBooksByGenre(Genre.SCIENCE_FICTION)).thenReturn(List.of(book1));
+        // GIVEN
+        when(bookService.getBooksByGenre(Genre.FANTASY)).thenReturn(List.of(bookUno));
 
-        mockMvc.perform(get("/api/books/genre/SCIENCE_FICTION"))
-                .andExpect(status().isOk());
+        // WHEN
+        ResponseEntity<List<BookDTO>> response = bookController.getBooksByGenre(Genre.FANTASY);
+
+        // THEN
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(1, response.getBody().size());
+        verify(bookService).getBooksByGenre(Genre.FANTASY);
     }
 
     @Test
-    void getBooksCurrentlyOnLoan_shouldReturnList() throws Exception {
+    void shouldReturnBooksOnLoan() {
 
-        Mockito.when(bookService.getBooksCurrentlyOnLoan()).thenReturn(List.of(book2));
+        // GIVEN
+        when(bookService.getBooksCurrentlyOnLoan()).thenReturn(List.of(bookDos));
 
-        mockMvc.perform(get("/api/books/on-loan"))
-                .andExpect(status().isOk());
+        // WHEN
+        ResponseEntity<List<BookDTO>> response = bookController.getBooksCurrentlyOnLoan();
+
+        // THEN
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(1, response.getBody().size());
+        verify(bookService).getBooksCurrentlyOnLoan();
     }
 
     @Test
-    void getBooksByAuthor_shouldReturnList() throws Exception {
+    void shouldReturnBooksByAuthor() {
 
-        Mockito.when(bookService.getBooksByAuthor("George Orwell"))
-                .thenReturn(List.of(book1));
+        // GIVEN
+        when(bookService.getBooksByAuthor("Autor A")).thenReturn(List.of(bookUno));
 
-        mockMvc.perform(get("/api/books/author/George Orwell"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)));
+        // WHEN
+        ResponseEntity<List<BookDTO>> response = bookController.getBooksByAuthor("Autor A");
+
+        // THEN
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(1, response.getBody().size());
+        verify(bookService).getBooksByAuthor("Autor A");
     }
 }
