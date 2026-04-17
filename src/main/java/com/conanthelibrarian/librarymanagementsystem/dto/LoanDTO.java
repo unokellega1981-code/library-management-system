@@ -15,16 +15,10 @@ import java.time.LocalDate;
 public class LoanDTO {
 
     private Integer id;
-
     private Integer userId;
-
     private Integer bookId;
-
     private LocalDate loanDate;
-
     private LocalDate dueDate;
-
     private LocalDate returnedDate;
-
     private BigDecimal price;
 }
