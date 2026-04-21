@@ -6,7 +6,6 @@ import com.conanthelibrarian.librarymanagementsystem.entity.User;
 import com.conanthelibrarian.librarymanagementsystem.exception.ResourceNotFoundException;
 import com.conanthelibrarian.librarymanagementsystem.repository.LoanRepository;
 import com.conanthelibrarian.librarymanagementsystem.repository.UserRepository;
-import com.conanthelibrarian.librarymanagementsystem.service.implementation.UserServiceImplementation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

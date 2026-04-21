@@ -6,12 +6,11 @@ import com.conanthelibrarian.librarymanagementsystem.exception.BadRequestExcepti
 
 public class UserMapper {
 
-    private UserMapper() {
+    public UserMapper() {
     }
 
-    public static UserDTO toDTO(User user) {
+    public UserDTO toDTO(User user) {
         if (user == null) return null;
-
         return new UserDTO(
                 user.getId(),
                 user.getName(),
@@ -21,7 +20,7 @@ public class UserMapper {
         );
     }
 
-    public static User toEntity(UserDTO userDTO) {
+    public User toEntity(UserDTO userDTO) {
         if (userDTO == null) {
             throw new BadRequestException("El cuerpo de la petición no puede ser null");
         }

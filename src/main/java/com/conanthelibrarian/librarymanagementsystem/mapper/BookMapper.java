@@ -6,10 +6,10 @@ import com.conanthelibrarian.librarymanagementsystem.exception.BadRequestExcepti
 
 public class BookMapper {
 
-    private BookMapper() {
+    public BookMapper() {
     }
 
-    public static BookDTO toDTO(Book book) {
+    public BookDTO toDTO(Book book) {
         if (book == null) return null;
         return new BookDTO(
                 book.getId(),
@@ -21,7 +21,7 @@ public class BookMapper {
         );
     }
 
-    public static Book toEntity(BookDTO bookDTO) {
+    public Book toEntity(BookDTO bookDTO) {
 
         if (bookDTO == null) {
             throw new BadRequestException("El cuerpo de la petición no puede ser null");

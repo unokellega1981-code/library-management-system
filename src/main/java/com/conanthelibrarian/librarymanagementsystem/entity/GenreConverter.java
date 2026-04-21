@@ -7,6 +7,8 @@ import jakarta.persistence.Converter;
 @Converter(autoApply = true)
 public class GenreConverter implements AttributeConverter<Genre, String> {
 
+    Genre genre;
+
     @Override
     public String convertToDatabaseColumn(Genre genre) {
         return genre == null ? null : genre.getDataBaseValue();
@@ -14,6 +16,6 @@ public class GenreConverter implements AttributeConverter<Genre, String> {
 
     @Override
     public Genre convertToEntityAttribute(String dataBaseValue) {
-        return dataBaseValue == null ? null : Genre.fromDataBaseValue(dataBaseValue);
+        return dataBaseValue == null ? null : genre.fromDataBaseValue(dataBaseValue);
     }
 }

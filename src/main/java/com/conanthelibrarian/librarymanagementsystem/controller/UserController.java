@@ -16,6 +16,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    UserMapper userMapper;
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -36,7 +37,7 @@ public class UserController {
     @PostMapping("/createuser")
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
         log.info("POST /api/users/createuser - Creando usuario: {}", userDTO);
-        UserMapper.toEntity(userDTO);
+        userMapper.toEntity(userDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.createUser(userDTO));
     }
@@ -44,7 +45,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
         log.info("PUT /api/users/{} - Actualizando usuario con datos: {}", id, userDTO);
-        UserMapper.toEntity(userDTO);
+        userMapper.toEntity(userDTO);
         return ResponseEntity.ok(userService.updateUser(id, userDTO));
     }
 

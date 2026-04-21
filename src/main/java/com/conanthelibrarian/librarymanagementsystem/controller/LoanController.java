@@ -17,6 +17,7 @@ import java.util.List;
 public class LoanController {
 
     private final LoanService loanService;
+    LoanMapper loanMapper;
 
     public LoanController(LoanService loanService) {
         this.loanService = loanService;
@@ -37,7 +38,7 @@ public class LoanController {
     @PostMapping("/createloan")
     public ResponseEntity<LoanDTO> createLoan(@RequestBody LoanDTO loanDTO) {
         log.info("POST /api/loans/createloan - Creando préstamo: {}", loanDTO);
-        LoanMapper.toEntity(loanDTO);
+        loanMapper.toEntity(loanDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(loanService.createLoan(loanDTO));
     }
@@ -45,7 +46,7 @@ public class LoanController {
     @PutMapping("/{id}")
     public ResponseEntity<LoanDTO> updateLoan(@PathVariable Integer id, @RequestBody LoanDTO loanDTO) {
         log.info("PUT /api/loans/{} - Actualizando préstamo con datos: {}", id, loanDTO);
-        LoanMapper.toEntity(loanDTO);
+        loanMapper.toEntity(loanDTO);
         return ResponseEntity.ok(loanService.updateLoan(id, loanDTO));
     }
 

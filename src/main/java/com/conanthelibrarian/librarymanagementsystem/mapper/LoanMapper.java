@@ -8,10 +8,10 @@ import com.conanthelibrarian.librarymanagementsystem.exception.BadRequestExcepti
 
 public class LoanMapper {
 
-    private LoanMapper() {
+    public LoanMapper() {
     }
 
-    public static LoanDTO toDTO(Loan loan) {
+    public LoanDTO toDTO(Loan loan) {
         if (loan == null) {
             return null;
         }
@@ -37,7 +37,7 @@ public class LoanMapper {
         );
     }
 
-    public static Loan toEntity(LoanDTO loanDTO) {
+    public Loan toEntity(LoanDTO loanDTO) {
 
         if (loanDTO == null) {
             throw new BadRequestException("El cuerpo de la petición no puede ser null");

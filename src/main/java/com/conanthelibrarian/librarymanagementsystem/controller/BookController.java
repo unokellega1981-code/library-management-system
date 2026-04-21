@@ -17,6 +17,7 @@ import java.util.List;
 public class BookController {
 
     private final BookService bookService;
+    BookMapper bookMapper;
 
     public BookController(BookService bookService) {
         this.bookService = bookService;
@@ -37,7 +38,7 @@ public class BookController {
     @PostMapping("/createbook")
     public ResponseEntity<BookDTO> createBook(@RequestBody BookDTO bookDTO) {
         log.info("POST /api/books/createbook - Creando libro: {}", bookDTO);
-        BookMapper.toEntity(bookDTO);
+        bookMapper.toEntity(bookDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(bookService.createBook(bookDTO));
     }
@@ -45,7 +46,7 @@ public class BookController {
     @PutMapping("/{id}")
     public ResponseEntity<BookDTO> updateBook(@PathVariable Integer id, @RequestBody BookDTO bookDTO) {
         log.info("PUT /api/books/{} - Actualizando libro con datos: {}", id, bookDTO);
-        BookMapper.toEntity(bookDTO);
+        bookMapper.toEntity(bookDTO);
         return ResponseEntity.ok(bookService.updateBook(id, bookDTO));
     }
 
