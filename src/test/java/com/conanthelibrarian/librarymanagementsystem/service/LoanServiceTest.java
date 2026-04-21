@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class LoanServiceImplementationTest {
+class LoanServiceTest {
 
     @Mock
     private LoanRepository loanRepository;
@@ -35,7 +35,7 @@ class LoanServiceImplementationTest {
     private UserRepository userRepository;
 
     @InjectMocks
-    private LoanServiceImplementation loanServiceImplementation;
+    private LoanService loanService;
 
     @Test
     void shouldReturnAllLoans() {
@@ -45,7 +45,7 @@ class LoanServiceImplementationTest {
 
         when(loanRepository.findAll()).thenReturn(List.of(loanUno, loanDos));
 
-        var result = loanServiceImplementation.getAllLoans();
+        var result = loanService.getAllLoans();
 
         assertEquals(2, result.size());
         verify(loanRepository).findAll();
@@ -59,7 +59,7 @@ class LoanServiceImplementationTest {
 
         when(loanRepository.findById(1)).thenReturn(Optional.of(loan));
 
-        var result = loanServiceImplementation.getLoanById(1);
+        var result = loanService.getLoanById(1);
 
         assertNotNull(result);
         verify(loanRepository).findById(1);
@@ -71,7 +71,7 @@ class LoanServiceImplementationTest {
         when(loanRepository.findById(1)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
-                () -> loanServiceImplementation.getLoanById(1));
+                () -> loanService.getLoanById(1));
     }
 
     @Test
@@ -96,7 +96,7 @@ class LoanServiceImplementationTest {
         when(bookRepository.findById(1)).thenReturn(Optional.of(book));
         when(loanRepository.save(any())).thenReturn(loan);
 
-        var result = loanServiceImplementation.createLoan(loanDTO);
+        var result = loanService.createLoan(loanDTO);
 
         assertNotNull(result);
 
@@ -122,7 +122,7 @@ class LoanServiceImplementationTest {
         when(bookRepository.findById(1)).thenReturn(Optional.of(book));
 
         assertThrows(BadRequestException.class,
-                () -> loanServiceImplementation.createLoan(dto));
+                () -> loanService.createLoan(dto));
     }
 
     @Test
@@ -134,7 +134,7 @@ class LoanServiceImplementationTest {
 
         when(loanRepository.findById(1)).thenReturn(Optional.of(loan));
 
-        loanServiceImplementation.deleteLoan(1);
+        loanService.deleteLoan(1);
 
         verify(loanRepository).delete(loan);
     }
@@ -148,7 +148,7 @@ class LoanServiceImplementationTest {
         when(loanRepository.findById(1)).thenReturn(Optional.of(loan));
 
         assertThrows(BadRequestException.class,
-                () -> loanServiceImplementation.deleteLoan(1));
+                () -> loanService.deleteLoan(1));
     }
 
     @Test
@@ -165,7 +165,7 @@ class LoanServiceImplementationTest {
         when(bookRepository.findById(1)).thenReturn(Optional.of(book));
         when(loanRepository.save(any())).thenReturn(new Loan());
 
-        var result = loanServiceImplementation.lendBookToUser(1, 1);
+        var result = loanService.lendBookToUser(1, 1);
 
         assertNotNull(result);
 
@@ -188,7 +188,7 @@ class LoanServiceImplementationTest {
         when(loanRepository.findById(1)).thenReturn(Optional.of(loan));
         when(loanRepository.save(any())).thenReturn(loan);
 
-        var result = loanServiceImplementation.returnBook(1);
+        var result = loanService.returnBook(1);
 
         assertNotNull(result);
         assertNotNull(loan.getReturnedDate());
@@ -205,6 +205,6 @@ class LoanServiceImplementationTest {
         when(loanRepository.findById(1)).thenReturn(Optional.of(loan));
 
         assertThrows(BadRequestException.class,
-                () -> loanServiceImplementation.returnBook(1));
+                () -> loanService.returnBook(1));
     }
 }

@@ -2,6 +2,7 @@ package com.conanthelibrarian.librarymanagementsystem.controller;
 
 import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.dto.LoanDTO;
+import com.conanthelibrarian.librarymanagementsystem.service.LoanService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

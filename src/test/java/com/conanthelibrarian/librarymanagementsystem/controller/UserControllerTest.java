@@ -2,6 +2,7 @@ package com.conanthelibrarian.librarymanagementsystem.controller;
 
 import com.conanthelibrarian.librarymanagementsystem.constants.Role;
 import com.conanthelibrarian.librarymanagementsystem.dto.UserDTO;
+import com.conanthelibrarian.librarymanagementsystem.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class BookServiceImplementationTest {
+class BookServiceTest {
 
     @Mock
     private BookRepository bookRepository;
@@ -27,7 +27,7 @@ class BookServiceImplementationTest {
     private LoanRepository loanRepository;
 
     @InjectMocks
-    private BookServiceImplementation bookServiceImplementation;
+    private BookService bookService;
 
     @Test
     void shouldReturnAllBooks() {
@@ -39,7 +39,7 @@ class BookServiceImplementationTest {
         when(bookRepository.findAll()).thenReturn(List.of(bookUno, bookDos));
 
         // WHEN
-        List<BookDTO> result = bookServiceImplementation.getAllBooks();
+        List<BookDTO> result = bookService.getAllBooks();
 
         // THEN
         assertEquals(2, result.size());
@@ -57,7 +57,7 @@ class BookServiceImplementationTest {
         when(bookRepository.findById(1)).thenReturn(Optional.of(book));
 
         // WHEN
-        BookDTO result = bookServiceImplementation.getBookById(1);
+        BookDTO result = bookService.getBookById(1);
 
         // THEN
         assertNotNull(result);
@@ -73,7 +73,7 @@ class BookServiceImplementationTest {
 
         // WHEN + THEN
         assertThrows(ResourceNotFoundException.class,
-                () -> bookServiceImplementation.getBookById(1));
+                () -> bookService.getBookById(1));
 
         verify(bookRepository).findById(1);
     }
@@ -92,7 +92,7 @@ class BookServiceImplementationTest {
         when(bookRepository.save(any(Book.class))).thenReturn(book);
 
         // WHEN
-        BookDTO result = bookServiceImplementation.createBook(bookDTO);
+        BookDTO result = bookService.createBook(bookDTO);
 
         // THEN
         assertNotNull(result);
@@ -116,7 +116,7 @@ class BookServiceImplementationTest {
         when(bookRepository.save(existingBook)).thenReturn(existingBook);
 
         // WHEN
-        BookDTO result = bookServiceImplementation.updateBook(1, dto);
+        BookDTO result = bookService.updateBook(1, dto);
 
         // THEN
         assertNotNull(result);
@@ -132,7 +132,7 @@ class BookServiceImplementationTest {
 
         // WHEN + THEN
         assertThrows(ResourceNotFoundException.class,
-                () -> bookServiceImplementation.updateBook(1, new BookDTO()));
+                () -> bookService.updateBook(1, new BookDTO()));
     }
 
     @Test
@@ -145,7 +145,7 @@ class BookServiceImplementationTest {
         when(bookRepository.findById(1)).thenReturn(Optional.of(book));
 
         // WHEN
-        bookServiceImplementation.deleteBook(1);
+        bookService.deleteBook(1);
 
         // THEN
         verify(bookRepository).delete(book);
@@ -159,6 +159,6 @@ class BookServiceImplementationTest {
 
         // WHEN + THEN
         assertThrows(ResourceNotFoundException.class,
-                () -> bookServiceImplementation.deleteBook(1));
+                () -> bookService.deleteBook(1));
     }
 }

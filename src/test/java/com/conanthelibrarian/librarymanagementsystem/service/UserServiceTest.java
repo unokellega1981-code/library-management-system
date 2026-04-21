@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceImplementationTest {
+class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
@@ -28,7 +28,7 @@ class UserServiceImplementationTest {
     private LoanRepository loanRepository;
 
     @InjectMocks
-    private UserServiceImplementation userServiceImplementation;
+    private UserService userService;
 
     @Test
     void shouldReturnAllUsers() {
@@ -40,7 +40,7 @@ class UserServiceImplementationTest {
         when(userRepository.findAll()).thenReturn(List.of(userUno, userDos));
 
         // WHEN
-        List<UserDTO> result = userServiceImplementation.getAllUsers();
+        List<UserDTO> result = userService.getAllUsers();
 
         // THEN
         assertEquals(2, result.size());
@@ -58,7 +58,7 @@ class UserServiceImplementationTest {
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
 
         // WHEN
-        UserDTO result = userServiceImplementation.getUserById(1);
+        UserDTO result = userService.getUserById(1);
 
         // THEN
         assertNotNull(result);
@@ -74,7 +74,7 @@ class UserServiceImplementationTest {
 
         // WHEN + THEN
         assertThrows(ResourceNotFoundException.class,
-                () -> userServiceImplementation.getUserById(1));
+                () -> userService.getUserById(1));
 
         verify(userRepository).findById(1);
     }
@@ -94,7 +94,7 @@ class UserServiceImplementationTest {
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
         // WHEN
-        UserDTO result = userServiceImplementation.createUser(dto);
+        UserDTO result = userService.createUser(dto);
 
         // THEN
         assertNotNull(result);
@@ -121,7 +121,7 @@ class UserServiceImplementationTest {
         when(userRepository.save(existingUser)).thenReturn(existingUser);
 
         // WHEN
-        UserDTO result = userServiceImplementation.updateUser(1, dto);
+        UserDTO result = userService.updateUser(1, dto);
 
         // THEN
         assertNotNull(result);
@@ -137,7 +137,7 @@ class UserServiceImplementationTest {
 
         // WHEN + THEN
         assertThrows(ResourceNotFoundException.class,
-                () -> userServiceImplementation.updateUser(1, new UserDTO()));
+                () -> userService.updateUser(1, new UserDTO()));
 
         verify(userRepository).findById(1);
     }
@@ -152,7 +152,7 @@ class UserServiceImplementationTest {
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
 
         // WHEN
-        userServiceImplementation.deleteUser(1);
+        userService.deleteUser(1);
 
         // THEN
         verify(userRepository).delete(user);
@@ -166,7 +166,7 @@ class UserServiceImplementationTest {
 
         // WHEN + THEN
         assertThrows(ResourceNotFoundException.class,
-                () -> userServiceImplementation.deleteUser(1));
+                () -> userService.deleteUser(1));
 
         verify(userRepository).findById(1);
     }
@@ -181,7 +181,7 @@ class UserServiceImplementationTest {
                 .thenReturn(List.of(user));
 
         // WHEN
-        List<UserDTO> result = userServiceImplementation.getUsersWithMoreThanXActiveLoans(2);
+        List<UserDTO> result = userService.getUsersWithMoreThanXActiveLoans(2);
 
         // THEN
         assertEquals(1, result.size());
@@ -198,7 +198,7 @@ class UserServiceImplementationTest {
                 .thenReturn(List.of(user));
 
         // WHEN
-        List<UserDTO> result = userServiceImplementation.getUsersWithMoreThanXTotalLoans(3);
+        List<UserDTO> result = userService.getUsersWithMoreThanXTotalLoans(3);
 
         // THEN
         assertEquals(1, result.size());
@@ -216,7 +216,7 @@ class UserServiceImplementationTest {
                 .thenReturn(Optional.of(user));
 
         // WHEN
-        UserDTO result = userServiceImplementation.getUserByName("Juan");
+        UserDTO result = userService.getUserByName("Juan");
 
         // THEN
         assertNotNull(result);
@@ -232,7 +232,7 @@ class UserServiceImplementationTest {
 
         // WHEN + THEN
         assertThrows(ResourceNotFoundException.class,
-                () -> userServiceImplementation.getUserByName("Juan"));
+                () -> userService.getUserByName("Juan"));
 
         verify(userRepository).findByName("Juan");
     }
