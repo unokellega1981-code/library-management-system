@@ -13,6 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class UserMapperTest {
 
+    UserMapper userMapper = new UserMapper();
+
     @Test
     void shouldConvertEntityToDTO() {
 
@@ -25,7 +27,7 @@ class UserMapperTest {
         user.setRole(Role.MEMBER);
 
         // WHEN
-        UserDTO userDTO = UserMapper.toDTO(user);
+        UserDTO userDTO = userMapper.toDTO(user);
 
         // THEN
         assertEquals(user.getId(), userDTO.getId());
@@ -47,7 +49,7 @@ class UserMapperTest {
         userDTO.setRole(Role.MEMBER);
 
         // WHEN
-        User user = UserMapper.toEntity(userDTO);
+        User user = userMapper.toEntity(userDTO);
 
         // THEN
         assertEquals(userDTO.getId(), user.getId());
@@ -61,7 +63,7 @@ class UserMapperTest {
     void shouldReturnNullWhenEntityIsNull() {
 
         // WHEN
-        UserDTO userDTO = UserMapper.toDTO(null);
+        UserDTO userDTO = userMapper.toDTO(null);
 
         // THEN
         assertNull(userDTO);
@@ -71,6 +73,6 @@ class UserMapperTest {
     void shouldThrowExceptionWhenDTOIsNull() {
 
         // THEN
-        assertThrows(BadRequestException.class, () -> UserMapper.toEntity(null));
+        assertThrows(BadRequestException.class, () -> userMapper.toEntity(null));
     }
 }

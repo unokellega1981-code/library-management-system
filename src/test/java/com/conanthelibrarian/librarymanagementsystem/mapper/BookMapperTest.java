@@ -13,6 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class BookMapperTest {
 
+    BookMapper bookMapper = new BookMapper();
+
     @Test
     void shouldConvertEntityToDTO() {
 
@@ -26,7 +28,7 @@ class BookMapperTest {
         book.setAvailableCopies(3);
 
         // WHEN
-        BookDTO bookDTO = BookMapper.toDTO(book);
+        BookDTO bookDTO = bookMapper.toDTO(book);
 
         // THEN
         assertEquals(book.getId(), bookDTO.getId());
@@ -50,7 +52,7 @@ class BookMapperTest {
         bookDTO.setAvailableCopies(5);
 
         // WHEN
-        Book book = BookMapper.toEntity(bookDTO);
+        Book book = bookMapper.toEntity(bookDTO);
 
         // THEN
         assertEquals(bookDTO.getId(), book.getId());
@@ -65,7 +67,7 @@ class BookMapperTest {
     void shouldReturnNullWhenEntityIsNull() {
 
         // WHEN
-        BookDTO bookDTO = BookMapper.toDTO(null);
+        BookDTO bookDTO = bookMapper.toDTO(null);
 
         // THEN
         assertNull(bookDTO);
@@ -75,6 +77,6 @@ class BookMapperTest {
     void shouldThrowExceptionWhenDTOIsNull() {
 
         // THEN
-        assertThrows(BadRequestException.class, () -> BookMapper.toEntity(null));
+        assertThrows(BadRequestException.class, () -> bookMapper.toEntity(null));
     }
 }

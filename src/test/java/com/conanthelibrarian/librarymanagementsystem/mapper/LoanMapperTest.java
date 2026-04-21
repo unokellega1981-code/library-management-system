@@ -16,6 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class LoanMapperTest {
 
+    LoanMapper loanMapper = new LoanMapper();
+
     @Test
     void shouldConvertEntityToDTO() {
 
@@ -34,7 +36,7 @@ class LoanMapperTest {
         loan.setDueDate(LocalDate.now().plusDays(7));
 
         // WHEN
-        LoanDTO loanDTO = LoanMapper.toDTO(loan);
+        LoanDTO loanDTO = loanMapper.toDTO(loan);
 
         // THEN
         assertEquals(loan.getId(), loanDTO.getId());
@@ -56,7 +58,7 @@ class LoanMapperTest {
         loanDTO.setDueDate(LocalDate.now().plusDays(7));
 
         // WHEN
-        Loan loan = LoanMapper.toEntity(loanDTO);
+        Loan loan = loanMapper.toEntity(loanDTO);
 
         // THEN
         assertEquals(loanDTO.getId(), loan.getId());
@@ -69,7 +71,7 @@ class LoanMapperTest {
     void shouldReturnNullWhenEntityIsNull() {
 
         // WHEN
-        LoanDTO loanDTO = LoanMapper.toDTO(null);
+        LoanDTO loanDTO = loanMapper.toDTO(null);
 
         // THEN
         assertNull(loanDTO);
@@ -79,6 +81,6 @@ class LoanMapperTest {
     void shouldThrowExceptionWhenDTOIsNull() {
 
         // THEN
-        assertThrows(BadRequestException.class, () -> LoanMapper.toEntity(null));
+        assertThrows(BadRequestException.class, () -> loanMapper.toEntity(null));
     }
 }
