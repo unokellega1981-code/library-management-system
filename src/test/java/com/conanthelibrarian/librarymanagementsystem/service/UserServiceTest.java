@@ -83,9 +83,7 @@ class UserServiceTest {
     void shouldCreateUser() {
 
         // GIVEN
-        UserDTO dto = new UserDTO();
-        dto.setName("Test User");
-        dto.setEmail("test@test.com");
+        UserDTO dto = new UserDTO(1, "Test User", "test@test.com", "123456", Role.MEMBER);
 
         User savedUser = new User();
         savedUser.setId(1);
