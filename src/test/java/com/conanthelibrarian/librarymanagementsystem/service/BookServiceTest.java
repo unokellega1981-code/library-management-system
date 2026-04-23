@@ -1,5 +1,6 @@
 package com.conanthelibrarian.librarymanagementsystem.service;
 
+import com.conanthelibrarian.librarymanagementsystem.constants.Genre;
 import com.conanthelibrarian.librarymanagementsystem.dto.BookDTO;
 import com.conanthelibrarian.librarymanagementsystem.entity.Book;
 import com.conanthelibrarian.librarymanagementsystem.exception.ResourceNotFoundException;
@@ -82,8 +83,7 @@ class BookServiceTest {
     void shouldCreateBook() {
 
         // GIVEN
-        BookDTO bookDTO = new BookDTO();
-        bookDTO.setTitle("Test Book");
+        BookDTO bookDTO = new BookDTO(1, "Test Book", "Test Author", "123456" , Genre.FANTASY, 3);
 
         Book book = new Book();
         book.setId(1);
