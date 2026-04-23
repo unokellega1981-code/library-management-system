@@ -107,21 +107,6 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldReturnUserByName() {
-
-        // GIVEN
-        when(userService.getUserByName("Juan")).thenReturn(userDTO);
-
-        // WHEN
-        ResponseEntity<UserDTO> response = userController.getUserByName("Juan");
-
-        // THEN
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Juan", response.getBody().getName());
-        verify(userService).getUserByName("Juan");
-    }
-
-    @Test
     void shouldReturnUsersWithMoreThanXActiveLoans() {
 
         // GIVEN
@@ -153,5 +138,20 @@ class UserControllerTest {
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(1, response.getBody().size());
         verify(userService).getUsersWithMoreThanXTotalLoans(3);
+    }
+
+    @Test
+    void shouldReturnUserByName() {
+
+        // GIVEN
+        when(userService.getUserByName("Juan")).thenReturn(userDTO);
+
+        // WHEN
+        ResponseEntity<UserDTO> response = userController.getUserByName("Juan");
+
+        // THEN
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Juan", response.getBody().getName());
+        verify(userService).getUserByName("Juan");
     }
 }

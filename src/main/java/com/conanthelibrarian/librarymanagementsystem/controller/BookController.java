@@ -17,7 +17,7 @@ import java.util.List;
 public class BookController {
 
     private final BookService bookService;
-    BookMapper bookMapper;
+    BookMapper bookMapper = new BookMapper();
 
     public BookController(BookService bookService) {
         this.bookService = bookService;

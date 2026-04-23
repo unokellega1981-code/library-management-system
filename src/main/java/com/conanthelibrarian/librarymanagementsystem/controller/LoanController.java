@@ -17,7 +17,7 @@ import java.util.List;
 public class LoanController {
 
     private final LoanService loanService;
-    LoanMapper loanMapper;
+    LoanMapper loanMapper= new  LoanMapper();
 
     public LoanController(LoanService loanService) {
         this.loanService = loanService;

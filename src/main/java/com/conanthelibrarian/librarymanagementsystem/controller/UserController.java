@@ -16,7 +16,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    UserMapper userMapper;
+    UserMapper userMapper =  new UserMapper();
 
     public UserController(UserService userService) {
         this.userService = userService;

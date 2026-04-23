@@ -84,6 +84,21 @@ class LoanControllerTest {
     }
 
     @Test
+    void shouldUpdateLoan() {
+
+        // GIVEN
+        when(loanService.updateLoan(1, loanDTO)).thenReturn(loanDTO);
+
+        // WHEN
+        ResponseEntity<LoanDTO> response = loanController.updateLoan(1, loanDTO);
+
+        // THEN
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(loanDTO, response.getBody());
+        verify(loanService).updateLoan(1, loanDTO);
+    }
+
+    @Test
     void shouldDeleteLoan() {
 
         // GIVEN
